@@ -56,7 +56,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(212, 344);
+            this.label6.Location = new System.Drawing.Point(137, 358);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(181, 26);
             this.label6.TabIndex = 48;
@@ -66,7 +66,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(210, 291);
+            this.label7.Location = new System.Drawing.Point(135, 305);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(107, 26);
             this.label7.TabIndex = 47;
@@ -74,14 +74,14 @@
             // 
             // txtBiayaTambahan
             // 
-            this.txtBiayaTambahan.Location = new System.Drawing.Point(452, 346);
+            this.txtBiayaTambahan.Location = new System.Drawing.Point(377, 360);
             this.txtBiayaTambahan.Name = "txtBiayaTambahan";
             this.txtBiayaTambahan.Size = new System.Drawing.Size(279, 26);
             this.txtBiayaTambahan.TabIndex = 46;
             // 
             // txtDeskripsi
             // 
-            this.txtDeskripsi.Location = new System.Drawing.Point(452, 291);
+            this.txtDeskripsi.Location = new System.Drawing.Point(377, 305);
             this.txtDeskripsi.Name = "txtDeskripsi";
             this.txtDeskripsi.Size = new System.Drawing.Size(279, 26);
             this.txtDeskripsi.TabIndex = 45;
@@ -90,7 +90,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(210, 399);
+            this.label3.Location = new System.Drawing.Point(135, 413);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(172, 26);
             this.label3.TabIndex = 44;
@@ -100,7 +100,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(210, 231);
+            this.label2.Location = new System.Drawing.Point(135, 245);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(165, 26);
             this.label2.TabIndex = 43;
@@ -110,7 +110,7 @@
             // 
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(533, 170);
+            this.lblID.Location = new System.Drawing.Point(458, 184);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(0, 26);
             this.lblID.TabIndex = 42;
@@ -118,20 +118,21 @@
             // dgvLaporan
             // 
             this.dgvLaporan.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvLaporan.Location = new System.Drawing.Point(903, 181);
+            this.dgvLaporan.Location = new System.Drawing.Point(857, 175);
             this.dgvLaporan.Name = "dgvLaporan";
             this.dgvLaporan.RowHeadersWidth = 62;
             this.dgvLaporan.RowTemplate.Height = 28;
-            this.dgvLaporan.Size = new System.Drawing.Size(751, 604);
+            this.dgvLaporan.Size = new System.Drawing.Size(1044, 761);
             this.dgvLaporan.TabIndex = 50;
             this.dgvLaporan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLaporan_CellClick);
             // 
             // btnUbah
             // 
             this.btnUbah.BackColor = System.Drawing.Color.Yellow;
-            this.btnUbah.Location = new System.Drawing.Point(687, 516);
+            this.btnUbah.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnUbah.Location = new System.Drawing.Point(570, 590);
             this.btnUbah.Name = "btnUbah";
-            this.btnUbah.Size = new System.Drawing.Size(141, 42);
+            this.btnUbah.Size = new System.Drawing.Size(156, 69);
             this.btnUbah.TabIndex = 58;
             this.btnUbah.Text = "Edit";
             this.btnUbah.UseVisualStyleBackColor = false;
@@ -140,9 +141,10 @@
             // btnHapus
             // 
             this.btnHapus.BackColor = System.Drawing.Color.Red;
-            this.btnHapus.Location = new System.Drawing.Point(70, 513);
+            this.btnHapus.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnHapus.Location = new System.Drawing.Point(109, 590);
             this.btnHapus.Name = "btnHapus";
-            this.btnHapus.Size = new System.Drawing.Size(133, 42);
+            this.btnHapus.Size = new System.Drawing.Size(157, 69);
             this.btnHapus.TabIndex = 57;
             this.btnHapus.Text = "Hapus";
             this.btnHapus.UseVisualStyleBackColor = false;
@@ -151,9 +153,10 @@
             // btnTambah
             // 
             this.btnTambah.BackColor = System.Drawing.Color.Lime;
-            this.btnTambah.Location = new System.Drawing.Point(385, 512);
+            this.btnTambah.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnTambah.Location = new System.Drawing.Point(354, 590);
             this.btnTambah.Name = "btnTambah";
-            this.btnTambah.Size = new System.Drawing.Size(148, 49);
+            this.btnTambah.Size = new System.Drawing.Size(155, 69);
             this.btnTambah.TabIndex = 56;
             this.btnTambah.Text = "Tambah";
             this.btnTambah.UseVisualStyleBackColor = false;
@@ -161,7 +164,7 @@
             // 
             // dtpTanggalSelesai
             // 
-            this.dtpTanggalSelesai.Location = new System.Drawing.Point(452, 399);
+            this.dtpTanggalSelesai.Location = new System.Drawing.Point(377, 413);
             this.dtpTanggalSelesai.Name = "dtpTanggalSelesai";
             this.dtpTanggalSelesai.Size = new System.Drawing.Size(279, 26);
             this.dtpTanggalSelesai.TabIndex = 60;
@@ -169,7 +172,7 @@
             // cmbPemesanan
             // 
             this.cmbPemesanan.FormattingEnabled = true;
-            this.cmbPemesanan.Location = new System.Drawing.Point(452, 233);
+            this.cmbPemesanan.Location = new System.Drawing.Point(377, 247);
             this.cmbPemesanan.Name = "cmbPemesanan";
             this.cmbPemesanan.Size = new System.Drawing.Size(279, 28);
             this.cmbPemesanan.TabIndex = 61;
@@ -178,7 +181,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(210, 170);
+            this.label1.Location = new System.Drawing.Point(135, 184);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(129, 26);
             this.label1.TabIndex = 62;
@@ -198,7 +201,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(212, 457);
+            this.label5.Location = new System.Drawing.Point(137, 471);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(124, 26);
             this.label5.TabIndex = 64;
@@ -206,7 +209,7 @@
             // 
             // txtTotalBiaya
             // 
-            this.txtTotalBiaya.Location = new System.Drawing.Point(452, 457);
+            this.txtTotalBiaya.Location = new System.Drawing.Point(377, 471);
             this.txtTotalBiaya.Name = "txtTotalBiaya";
             this.txtTotalBiaya.ReadOnly = true;
             this.txtTotalBiaya.Size = new System.Drawing.Size(279, 26);
@@ -214,20 +217,22 @@
             // 
             // btnImport
             // 
-            this.btnImport.BackColor = System.Drawing.Color.SkyBlue;
-            this.btnImport.Location = new System.Drawing.Point(101, 592);
+            this.btnImport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnImport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnImport.Location = new System.Drawing.Point(111, 720);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(136, 52);
+            this.btnImport.Size = new System.Drawing.Size(161, 70);
             this.btnImport.TabIndex = 95;
             this.btnImport.Text = "Import Data";
             this.btnImport.UseVisualStyleBackColor = false;
             // 
             // btnAnalyze
             // 
-            this.btnAnalyze.BackColor = System.Drawing.Color.Honeydew;
-            this.btnAnalyze.Location = new System.Drawing.Point(397, 592);
+            this.btnAnalyze.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.btnAnalyze.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnAnalyze.Location = new System.Drawing.Point(359, 720);
             this.btnAnalyze.Name = "btnAnalyze";
-            this.btnAnalyze.Size = new System.Drawing.Size(136, 52);
+            this.btnAnalyze.Size = new System.Drawing.Size(161, 70);
             this.btnAnalyze.TabIndex = 94;
             this.btnAnalyze.Text = "Analisis";
             this.btnAnalyze.UseVisualStyleBackColor = false;
@@ -235,22 +240,25 @@
             // 
             // btnRefresh
             // 
-            this.btnRefresh.BackColor = System.Drawing.Color.Cornsilk;
-            this.btnRefresh.Location = new System.Drawing.Point(636, 592);
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.btnRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnRefresh.Location = new System.Drawing.Point(570, 720);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(136, 52);
+            this.btnRefresh.Size = new System.Drawing.Size(162, 70);
             this.btnRefresh.TabIndex = 93;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(424, 696);
+            this.btnExport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.btnExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnExport.Location = new System.Drawing.Point(354, 854);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(120, 57);
+            this.btnExport.Size = new System.Drawing.Size(166, 64);
             this.btnExport.TabIndex = 96;
             this.btnExport.Text = "Export";
-            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.UseVisualStyleBackColor = false;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // UC_LaporanServis
@@ -280,7 +288,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblID);
             this.Name = "UC_LaporanServis";
-            this.Size = new System.Drawing.Size(1722, 865);
+            this.Size = new System.Drawing.Size(2000, 1000);
             ((System.ComponentModel.ISupportInitialize)(this.dgvLaporan)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -421,5 +421,10 @@ SET STATISTICS TIME OFF;";
         {
 
         }
+
+        private void UC_Kendaraan2_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

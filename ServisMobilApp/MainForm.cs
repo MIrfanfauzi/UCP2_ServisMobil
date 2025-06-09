@@ -40,6 +40,19 @@ namespace ServisMobilApp
             panelContent.Controls.Add(form);
             form.Show();
         }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+                "Apakah Anda yakin ingin logout?",
+                "Konfirmasi Logout",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+                Application.Restart();
+        }
         private void btnPelanggan_Click(object sender, EventArgs e)
         {
             LoadUserControl(new UC_Pelanggan1());

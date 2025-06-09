@@ -314,5 +314,10 @@ SET STATISTICS TIME OFF;";
             LoadLayanan();
             MessageBox.Show("Data layanan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void txtNamaLayanan_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -45,9 +45,9 @@ namespace ServisMobilApp
             // button2
             // 
             this.button2.BackColor = System.Drawing.Color.Yellow;
-            this.button2.Location = new System.Drawing.Point(570, 489);
+            this.button2.Location = new System.Drawing.Point(625, 661);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(147, 55);
+            this.button2.Size = new System.Drawing.Size(173, 83);
             this.button2.TabIndex = 100;
             this.button2.Text = "Edit";
             this.button2.UseVisualStyleBackColor = false;
@@ -56,9 +56,9 @@ namespace ServisMobilApp
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.Red;
-            this.button3.Location = new System.Drawing.Point(56, 489);
+            this.button3.Location = new System.Drawing.Point(102, 661);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(154, 56);
+            this.button3.Size = new System.Drawing.Size(161, 83);
             this.button3.TabIndex = 99;
             this.button3.Text = "Hapus";
             this.button3.UseVisualStyleBackColor = false;
@@ -67,9 +67,9 @@ namespace ServisMobilApp
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.Lime;
-            this.button4.Location = new System.Drawing.Point(342, 489);
+            this.button4.Location = new System.Drawing.Point(370, 661);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(158, 56);
+            this.button4.Size = new System.Drawing.Size(164, 83);
             this.button4.TabIndex = 98;
             this.button4.Text = "Tambah";
             this.button4.UseVisualStyleBackColor = false;
@@ -78,11 +78,11 @@ namespace ServisMobilApp
             // dgvKendaraan
             // 
             this.dgvKendaraan.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvKendaraan.Location = new System.Drawing.Point(800, 179);
+            this.dgvKendaraan.Location = new System.Drawing.Point(946, 219);
             this.dgvKendaraan.Name = "dgvKendaraan";
             this.dgvKendaraan.RowHeadersWidth = 62;
             this.dgvKendaraan.RowTemplate.Height = 28;
-            this.dgvKendaraan.Size = new System.Drawing.Size(979, 461);
+            this.dgvKendaraan.Size = new System.Drawing.Size(993, 661);
             this.dgvKendaraan.TabIndex = 97;
             this.dgvKendaraan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvKendaraan_CellClick);
             // 
@@ -90,7 +90,7 @@ namespace ServisMobilApp
             // 
             this.lblTahun.AutoSize = true;
             this.lblTahun.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTahun.Location = new System.Drawing.Point(74, 375);
+            this.lblTahun.Location = new System.Drawing.Point(122, 475);
             this.lblTahun.Name = "lblTahun";
             this.lblTahun.Size = new System.Drawing.Size(76, 26);
             this.lblTahun.TabIndex = 101;
@@ -100,7 +100,7 @@ namespace ServisMobilApp
             // 
             this.lblModel.AutoSize = true;
             this.lblModel.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblModel.Location = new System.Drawing.Point(74, 330);
+            this.lblModel.Location = new System.Drawing.Point(122, 410);
             this.lblModel.Name = "lblModel";
             this.lblModel.Size = new System.Drawing.Size(72, 26);
             this.lblModel.TabIndex = 102;
@@ -110,7 +110,7 @@ namespace ServisMobilApp
             // 
             this.lblMerek.AutoSize = true;
             this.lblMerek.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMerek.Location = new System.Drawing.Point(74, 276);
+            this.lblMerek.Location = new System.Drawing.Point(122, 352);
             this.lblMerek.Name = "lblMerek";
             this.lblMerek.Size = new System.Drawing.Size(73, 26);
             this.lblMerek.TabIndex = 103;
@@ -120,7 +120,7 @@ namespace ServisMobilApp
             // 
             this.lblPelanggan.AutoSize = true;
             this.lblPelanggan.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPelanggan.Location = new System.Drawing.Point(74, 221);
+            this.lblPelanggan.Location = new System.Drawing.Point(122, 293);
             this.lblPelanggan.Name = "lblPelanggan";
             this.lblPelanggan.Size = new System.Drawing.Size(185, 26);
             this.lblPelanggan.TabIndex = 104;
@@ -130,28 +130,28 @@ namespace ServisMobilApp
             // 
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(430, 184);
+            this.lblID.Location = new System.Drawing.Point(478, 241);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(0, 26);
             this.lblID.TabIndex = 105;
             // 
             // txtModel
             // 
-            this.txtModel.Location = new System.Drawing.Point(304, 330);
+            this.txtModel.Location = new System.Drawing.Point(352, 410);
             this.txtModel.Name = "txtModel";
             this.txtModel.Size = new System.Drawing.Size(248, 26);
             this.txtModel.TabIndex = 106;
             // 
             // txtMerek
             // 
-            this.txtMerek.Location = new System.Drawing.Point(304, 276);
+            this.txtMerek.Location = new System.Drawing.Point(352, 352);
             this.txtMerek.Name = "txtMerek";
             this.txtMerek.Size = new System.Drawing.Size(248, 26);
             this.txtMerek.TabIndex = 107;
             // 
             // cmbPelanggan
             // 
-            this.cmbPelanggan.Location = new System.Drawing.Point(304, 223);
+            this.cmbPelanggan.Location = new System.Drawing.Point(352, 295);
             this.cmbPelanggan.Name = "cmbPelanggan";
             this.cmbPelanggan.Size = new System.Drawing.Size(248, 28);
             this.cmbPelanggan.TabIndex = 5;
@@ -161,7 +161,7 @@ namespace ServisMobilApp
             // 
             this.lblNoPlat.AutoSize = true;
             this.lblNoPlat.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNoPlat.Location = new System.Drawing.Point(74, 416);
+            this.lblNoPlat.Location = new System.Drawing.Point(122, 539);
             this.lblNoPlat.Name = "lblNoPlat";
             this.lblNoPlat.Size = new System.Drawing.Size(86, 26);
             this.lblNoPlat.TabIndex = 4;
@@ -169,7 +169,7 @@ namespace ServisMobilApp
             // 
             // txtNoPlat
             // 
-            this.txtNoPlat.Location = new System.Drawing.Point(304, 417);
+            this.txtNoPlat.Location = new System.Drawing.Point(352, 540);
             this.txtNoPlat.Name = "txtNoPlat";
             this.txtNoPlat.Size = new System.Drawing.Size(248, 26);
             this.txtNoPlat.TabIndex = 3;
@@ -178,7 +178,7 @@ namespace ServisMobilApp
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(74, 179);
+            this.label1.Location = new System.Drawing.Point(122, 236);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(156, 26);
             this.label1.TabIndex = 2;
@@ -188,7 +188,7 @@ namespace ServisMobilApp
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Arial", 26F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(687, 51);
+            this.label3.Location = new System.Drawing.Point(782, 62);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(357, 61);
             this.label3.TabIndex = 1;
@@ -197,27 +197,27 @@ namespace ServisMobilApp
             // 
             // cmbTahun
             // 
-            this.cmbTahun.Location = new System.Drawing.Point(304, 372);
+            this.cmbTahun.Location = new System.Drawing.Point(352, 472);
             this.cmbTahun.Name = "cmbTahun";
             this.cmbTahun.Size = new System.Drawing.Size(248, 28);
             this.cmbTahun.TabIndex = 0;
             // 
             // btnImport
             // 
-            this.btnImport.BackColor = System.Drawing.Color.SkyBlue;
-            this.btnImport.Location = new System.Drawing.Point(46, 588);
+            this.btnImport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnImport.Location = new System.Drawing.Point(102, 808);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(136, 52);
+            this.btnImport.Size = new System.Drawing.Size(164, 79);
             this.btnImport.TabIndex = 110;
             this.btnImport.Text = "Import Data";
             this.btnImport.UseVisualStyleBackColor = false;
             // 
             // btnAnalyze
             // 
-            this.btnAnalyze.BackColor = System.Drawing.Color.Honeydew;
-            this.btnAnalyze.Location = new System.Drawing.Point(342, 588);
+            this.btnAnalyze.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.btnAnalyze.Location = new System.Drawing.Point(370, 808);
             this.btnAnalyze.Name = "btnAnalyze";
-            this.btnAnalyze.Size = new System.Drawing.Size(136, 52);
+            this.btnAnalyze.Size = new System.Drawing.Size(164, 79);
             this.btnAnalyze.TabIndex = 109;
             this.btnAnalyze.Text = "Analisis";
             this.btnAnalyze.UseVisualStyleBackColor = false;
@@ -225,17 +225,18 @@ namespace ServisMobilApp
             // 
             // btnRefresh
             // 
-            this.btnRefresh.BackColor = System.Drawing.Color.Cornsilk;
-            this.btnRefresh.Location = new System.Drawing.Point(581, 588);
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.btnRefresh.Location = new System.Drawing.Point(634, 808);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(136, 52);
+            this.btnRefresh.Size = new System.Drawing.Size(164, 79);
             this.btnRefresh.TabIndex = 108;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
             // 
             // UC_Kendaraan2
             // 
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnAnalyze);
@@ -258,7 +259,8 @@ namespace ServisMobilApp
             this.Controls.Add(this.txtModel);
             this.Controls.Add(this.txtMerek);
             this.Name = "UC_Kendaraan2";
-            this.Size = new System.Drawing.Size(1807, 845);
+            this.Size = new System.Drawing.Size(2000, 1000);
+            this.Load += new System.EventHandler(this.UC_Kendaraan2_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvKendaraan)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
