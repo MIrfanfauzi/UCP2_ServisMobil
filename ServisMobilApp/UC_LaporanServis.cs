@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Runtime.Caching;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -12,7 +13,8 @@ namespace ServisMobilApp
     public partial class UC_LaporanServis : UserControl
     {
         private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
-
+        private MemoryCache cache = MemoryCache.Default;
+        private string cacheKey = "LaporanServisData";
         public DateTime TanggalServis { get; set; }
 
         public UC_LaporanServis()
@@ -54,6 +56,13 @@ namespace ServisMobilApp
 
         private void LoadLaporan()
         {
+            if (cache.Contains(cacheKey))
+            {
+                dgvLaporan.DataSource = cache.Get(cacheKey) as DataTable;
+                KosongkanForm();
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
@@ -63,6 +72,10 @@ namespace ServisMobilApp
                     DataTable dt = new DataTable();
                     da.Fill(dt);
                     dgvLaporan.DataSource = dt;
+
+                    CacheItemPolicy policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
+                    cache.Set(cacheKey, dt, policy);
+
                     KosongkanForm();
                 }
                 catch (Exception ex)
@@ -70,6 +83,11 @@ namespace ServisMobilApp
                     MessageBox.Show("Gagal memuat laporan: " + ex.Message);
                 }
             }
+        }
+
+        private void ClearCache()
+        {
+            if (cache.Contains(cacheKey)) cache.Remove(cacheKey);
         }
 
         private void KosongkanForm()
@@ -142,6 +160,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Laporan servis berhasil ditambahkan!");
+                            ClearCache();
                             LoadLaporan();
                             KosongkanForm();
                         }
@@ -151,11 +170,6 @@ namespace ServisMobilApp
                             MessageBox.Show("Data tidak berhasil disimpan.");
                         }
                     }
-                }
-                catch (SqlException ex)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show("Gagal menambahkan laporan: " + ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -198,6 +212,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Laporan berhasil diperbarui!");
+                            ClearCache();
                             LoadLaporan();
                             KosongkanForm();
                         }
@@ -208,15 +223,10 @@ namespace ServisMobilApp
                         }
                     }
                 }
-                catch (SqlException ex)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show("Gagal memperbarui laporan: " + ex.Message);
-                }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Terjadi kesalahan: " + ex.Message);
+                    MessageBox.Show("Gagal memperbarui laporan: " + ex.Message);
                 }
             }
         }
@@ -249,6 +259,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Laporan berhasil dihapus!");
+                            ClearCache();
                             LoadLaporan();
                             KosongkanForm();
                         }
@@ -265,6 +276,13 @@ namespace ServisMobilApp
                     MessageBox.Show("Gagal menghapus laporan: " + ex.Message);
                 }
             }
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            ClearCache();
+            LoadLaporan();
+            MessageBox.Show("Data laporan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnExport_Click(object sender, EventArgs e)
@@ -437,13 +455,6 @@ SET STATISTICS TIME OFF;";
             string query = "SELECT * FROM dbo.LaporanServis WHERE BiayaTambahan < 100000";
 
             AnalyzeQuery(query);
-        }
-
-
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadLaporan();
-            MessageBox.Show("Data laporan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        } 
     }
 }

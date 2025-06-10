@@ -7,12 +7,20 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System.Runtime.Caching;
 
 namespace ServisMobilApp
 {
     public partial class UC_LayananServis : UserControl
     {
         private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private readonly CacheItemPolicy _policy = new CacheItemPolicy
+        {
+            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+        };
+        private const string CacheKey = "LayananServisData";
 
         public UC_LayananServis()
         {
@@ -26,23 +34,33 @@ namespace ServisMobilApp
 
         private void LoadLayanan()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            DataTable dt;
+            if (_cache.Contains(CacheKey))
             {
-                try
-                {
-                    conn.Open();
-                    string query = "EXEC GetAllLayanan";
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dgvLayanan.DataSource = dt;
-                    KosongkanForm();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Gagal memuat data layanan: " + ex.Message);
-                }
+                dt = _cache.Get(CacheKey) as DataTable;
             }
+            else
+            {
+                dt = new DataTable();
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        string query = "EXEC GetAllLayanan";
+                        SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Gagal memuat data layanan: " + ex.Message);
+                        return;
+                    }
+                }
+                _cache.Add(CacheKey, dt, _policy);
+            }
+            dgvLayanan.DataSource = dt;
+            KosongkanForm();
         }
 
         private void KosongkanForm()
@@ -104,6 +122,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data layanan berhasil ditambahkan.");
                             LoadLayanan();
                             KosongkanForm();
@@ -155,6 +174,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data layanan berhasil diperbarui.");
                             LoadLayanan();
                             KosongkanForm();
@@ -201,6 +221,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data layanan berhasil dihapus.");
                             LoadLayanan();
                             KosongkanForm();
@@ -220,7 +241,6 @@ namespace ServisMobilApp
             }
         }
 
-
         private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvLayanan.Rows[e.RowIndex].Cells.Count >= 4)
@@ -235,7 +255,14 @@ namespace ServisMobilApp
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Excel Files|*.xlsx;*.xlsm";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ImportFromExcel(ofd.FileName);
+                }
+            }
         }
 
         private void ImportFromExcel(string filePath)
@@ -266,6 +293,7 @@ namespace ServisMobilApp
 
                     PreviewForm preview = new PreviewForm(dt, "LayananServis");
                     preview.ShowDialog();
+                    _cache.Remove(CacheKey);
                     LoadLayanan();
                 }
             }
@@ -274,11 +302,11 @@ namespace ServisMobilApp
                 MessageBox.Show("Gagal mengimpor file Excel: " + ex.Message);
             }
         }
+
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                // Tangkap pesan InfoMessage dari SQL Server (hasil STATISTICS)
                 conn.InfoMessage += (s, e) =>
                 {
                     string messages = string.Join(Environment.NewLine, e.Errors.Cast<SqlError>().Select(err => err.Message));
@@ -296,28 +324,24 @@ SET STATISTICS TIME OFF;";
 
                 using (var cmd = new SqlCommand(wrappedQuery, conn))
                 {
-                    cmd.ExecuteNonQuery(); // jalankan tanpa ambil hasil data
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            // Contoh query yang ingin dianalisa
             string query = "SELECT * FROM dbo.LayananServis WHERE Harga > 100000";
-
             AnalyzeQuery(query);
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadLayanan();
             MessageBox.Show("Data layanan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void txtNamaLayanan_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void txtNamaLayanan_TextChanged(object sender, EventArgs e) { }
     }
 }

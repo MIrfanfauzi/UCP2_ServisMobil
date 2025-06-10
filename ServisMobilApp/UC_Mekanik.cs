@@ -7,12 +7,20 @@ using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Linq;
+using System.Runtime.Caching;
 
 namespace ServisMobilApp
 {
     public partial class UC_Mekanik : UserControl
     {
         private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private readonly CacheItemPolicy _policy = new CacheItemPolicy
+        {
+            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+        };
+        private const string CacheKey = "MekanikData";
 
         public UC_Mekanik()
         {
@@ -30,26 +38,38 @@ namespace ServisMobilApp
             btnRefresh.Click += btnRefresh_Click;
 
             LoadMekanik();
+            EnsureIndexes();
         }
 
         private void LoadMekanik()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            DataTable dt;
+            if (_cache.Contains(CacheKey))
             {
-                try
-                {
-                    conn.Open();
-                    string query = "EXEC GetAllMekanik";
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dgvData.DataSource = dt;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Gagal memuat data: " + ex.Message);
-                }
+                dt = _cache.Get(CacheKey) as DataTable;
             }
+            else
+            {
+                dt = new DataTable();
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        string query = "EXEC GetAllMekanik";
+                        SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Gagal memuat data: " + ex.Message);
+                        return;
+                    }
+                }
+                _cache.Add(CacheKey, dt, _policy);
+            }
+
+            dgvData.DataSource = dt;
         }
 
         private bool ValidasiInput()
@@ -108,6 +128,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data berhasil ditambahkan.");
                             LoadMekanik();
                             KosongkanForm();
@@ -164,6 +185,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data berhasil diperbarui.");
                             LoadMekanik();
                             KosongkanForm();
@@ -215,6 +237,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data berhasil dihapus.");
                             LoadMekanik();
                             KosongkanForm();
@@ -233,7 +256,6 @@ namespace ServisMobilApp
                 }
             }
         }
-
 
         private void btnImport_Click(object sender, EventArgs e)
         {
@@ -275,6 +297,7 @@ namespace ServisMobilApp
 
                     PreviewForm preview = new PreviewForm(dt, "Mekanik");
                     preview.ShowDialog();
+                    _cache.Remove(CacheKey);
                     LoadMekanik();
                 }
             }
@@ -286,6 +309,7 @@ namespace ServisMobilApp
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadMekanik();
             MessageBox.Show("Data mekanik dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -302,21 +326,36 @@ namespace ServisMobilApp
             }
         }
 
+        private void EnsureIndexes()
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                var indexScript = @"
+IF OBJECT_ID('dbo.Mekanik', 'U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Mekanik_Nama')
+        CREATE NONCLUSTERED INDEX idx_Mekanik_Nama ON dbo.Mekanik(Nama);
+END";
+                using (var cmd = new SqlCommand(indexScript, conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                // Tangkap pesan InfoMessage dari SQL Server
                 conn.InfoMessage += (s, e) =>
                 {
-                    // Gabungkan semua pesan ke satu string untuk ditampilkan
                     string messages = string.Join(Environment.NewLine, e.Errors.Cast<SqlError>().Select(err => err.Message));
                     MessageBox.Show(messages, "STATISTICS INFO");
                 };
 
                 conn.Open();
 
-                // Bungkus query dengan SET STATISTICS IO dan TIME ON/OFF
                 var wrappedQuery = $@"
 SET STATISTICS IO ON;
 SET STATISTICS TIME ON;
@@ -326,7 +365,6 @@ SET STATISTICS TIME OFF;";
 
                 using (var cmd = new SqlCommand(wrappedQuery, conn))
                 {
-                    // Gunakan ExecuteNonQuery agar tidak mengambil hasil data tapi memicu STATISTICS
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -334,9 +372,7 @@ SET STATISTICS TIME OFF;";
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            // Contoh query yang ingin dianalisa (bisa disesuaikan)
             string heavyQuery = "SELECT Nama, Telepon, Spesialisasi FROM dbo.Mekanik WHERE Nama LIKE 'A%'";
-
             AnalyzeQuery(heavyQuery);
         }
 

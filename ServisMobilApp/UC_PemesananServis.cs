@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Windows.Forms;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -12,6 +13,9 @@ namespace ServisMobilApp
     public partial class UC_PemesananServis : UserControl
     {
         private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private readonly CacheItemPolicy _policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
+        private const string CacheKey = "PemesananData";
 
         public UC_PemesananServis()
         {
@@ -26,7 +30,7 @@ namespace ServisMobilApp
             btnRefresh.Click += btnRefresh_Click;
             btnTambah.Click += btnTambah_Click;
             btnUbah.Click += btnUbah_Click;
-            btnHapus.Click += btnHapus_Click;
+
             EnsureIndexes();
         }
 
@@ -63,14 +67,25 @@ namespace ServisMobilApp
 
         private void LoadPemesanan()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            DataTable dt;
+
+            if (_cache.Contains(CacheKey))
             {
-                string query = "EXEC GetAllPemesananServis";
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dgvPemesanan.DataSource = dt;
+                dt = _cache.Get(CacheKey) as DataTable;
             }
+            else
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string query = "EXEC GetAllPemesananServis";
+                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                    dt = new DataTable();
+                    da.Fill(dt);
+                    _cache.Add(CacheKey, dt, _policy);
+                }
+            }
+
+            dgvPemesanan.DataSource = dt;
         }
 
         private void dgvPemesanan_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -117,6 +132,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Data berhasil ditambahkan.");
+                            _cache.Remove(CacheKey);
                             LoadPemesanan();
                             KosongkanForm();
                         }
@@ -130,7 +146,7 @@ namespace ServisMobilApp
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menambah data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Gagal menambah data: " + ex.Message);
                 }
             }
         }
@@ -167,6 +183,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Data berhasil diperbarui.");
+                            _cache.Remove(CacheKey);
                             LoadPemesanan();
                             KosongkanForm();
                         }
@@ -180,7 +197,7 @@ namespace ServisMobilApp
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal mengubah data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Gagal mengubah data: " + ex.Message);
                 }
             }
         }
@@ -212,6 +229,7 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             MessageBox.Show("Data berhasil dihapus.");
+                            _cache.Remove(CacheKey);
                             LoadPemesanan();
                             KosongkanForm();
                         }
@@ -225,7 +243,7 @@ namespace ServisMobilApp
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Gagal menghapus data: " + ex.Message);
                 }
             }
         }
@@ -236,19 +254,12 @@ namespace ServisMobilApp
             {
                 ofd.Filter = "Excel Files|*.xlsx;*.xlsm";
                 if (ofd.ShowDialog() == DialogResult.OK)
+                {
                     ImportFromExcel(ofd.FileName);
+                    _cache.Remove(CacheKey);
+                    LoadPemesanan();
+                }
             }
-        }
-
-        private void KosongkanForm()
-        {
-            lblID.Text = "";
-            cmbPelanggan.SelectedIndex = -1;
-            cmbKendaraan.SelectedIndex = -1;
-            cmbLayanan.SelectedIndex = -1;
-            cmbMekanik.SelectedIndex = -1;
-            cmbStatus.SelectedIndex = -1;
-            dtpTanggalServis.Value = DateTime.Now;
         }
 
         private void ImportFromExcel(string filePath)
@@ -278,7 +289,6 @@ namespace ServisMobilApp
 
                     PreviewForm preview = new PreviewForm(dt, "PemesananServis");
                     preview.ShowDialog();
-                    LoadPemesanan();
                 }
             }
             catch (Exception ex)
@@ -289,10 +299,33 @@ namespace ServisMobilApp
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadPemesanan();
             MessageBox.Show("Data pemesanan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void KosongkanForm()
+        {
+            lblID.Text = "";
+            cmbPelanggan.SelectedIndex = -1;
+            cmbKendaraan.SelectedIndex = -1;
+            cmbLayanan.SelectedIndex = -1;
+            cmbMekanik.SelectedIndex = -1;
+            cmbStatus.SelectedIndex = -1;
+            dtpTanggalServis.Value = DateTime.Now;
+        }
+
+        private bool ValidasiForm()
+        {
+            if (cmbPelanggan.SelectedIndex == -1 || cmbKendaraan.SelectedIndex == -1 ||
+                cmbLayanan.SelectedIndex == -1 || cmbMekanik.SelectedIndex == -1 ||
+                string.IsNullOrWhiteSpace(cmbStatus.Text))
+            {
+                MessageBox.Show("Semua data wajib diisi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
 
         private void EnsureIndexes()
         {
@@ -300,20 +333,20 @@ namespace ServisMobilApp
             {
                 conn.Open();
                 var indexScript = @"
-        IF OBJECT_ID('dbo.PemesananServis','U') IS NOT NULL
-        BEGIN
-            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDPelanggan')
-                CREATE NONCLUSTERED INDEX idx_Pemesanan_IDPelanggan ON dbo.PemesananServis(ID_Pelanggan);
-            
-            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDKendaraan')
-                CREATE NONCLUSTERED INDEX idx_Pemesanan_IDKendaraan ON dbo.PemesananServis(ID_Kendaraan);
-            
-            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDLayanan')
-                CREATE NONCLUSTERED INDEX idx_Pemesanan_IDLayanan ON dbo.PemesananServis(ID_Layanan);
-            
-            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDMekanik')
-                CREATE NONCLUSTERED INDEX idx_Pemesanan_IDMekanik ON dbo.PemesananServis(ID_Mekanik);
-        END";
+                IF OBJECT_ID('dbo.PemesananServis','U') IS NOT NULL
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDPelanggan')
+                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDPelanggan ON dbo.PemesananServis(ID_Pelanggan);
+                    
+                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDKendaraan')
+                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDKendaraan ON dbo.PemesananServis(ID_Kendaraan);
+                    
+                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDLayanan')
+                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDLayanan ON dbo.PemesananServis(ID_Layanan);
+                    
+                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDMekanik')
+                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDMekanik ON dbo.PemesananServis(ID_Mekanik);
+                END";
 
                 using (var cmd = new SqlCommand(indexScript, conn))
                 {
@@ -335,11 +368,11 @@ namespace ServisMobilApp
                 conn.Open();
 
                 var wrappedQuery = $@"
-SET STATISTICS IO ON;
-SET STATISTICS TIME ON;
-{sqlQuery};
-SET STATISTICS IO OFF;
-SET STATISTICS TIME OFF;";
+                SET STATISTICS IO ON;
+                SET STATISTICS TIME ON;
+                {sqlQuery};
+                SET STATISTICS IO OFF;
+                SET STATISTICS TIME OFF;";
 
                 using (var cmd = new SqlCommand(wrappedQuery, conn))
                 {
@@ -350,23 +383,10 @@ SET STATISTICS TIME OFF;";
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            // Contoh query untuk dianalisa, bisa ganti sesuai kebutuhan
             string query = "SELECT * FROM dbo.PemesananServis WHERE Status = 'Pending'";
-
             AnalyzeQuery(query);
         }
 
-        private bool ValidasiForm()
-        {
-            if (cmbPelanggan.SelectedIndex == -1 || cmbKendaraan.SelectedIndex == -1 ||
-                cmbLayanan.SelectedIndex == -1 || cmbMekanik.SelectedIndex == -1 ||
-                string.IsNullOrWhiteSpace(cmbStatus.Text))
-            {
-                MessageBox.Show("Semua data wajib diisi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-            return true;
-        }
     }
 }
 

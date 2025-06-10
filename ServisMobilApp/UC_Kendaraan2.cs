@@ -8,12 +8,20 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System.Runtime.Caching;
 
 namespace ServisMobilApp
 {
     public partial class UC_Kendaraan2 : UserControl
     {
         private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private readonly CacheItemPolicy _policy = new CacheItemPolicy
+        {
+            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+        };
+        private const string CacheKey = "KendaraanData";
 
         public UC_Kendaraan2()
         {
@@ -64,22 +72,33 @@ namespace ServisMobilApp
 
         private void LoadKendaraan()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            DataTable dt;
+            if (_cache.Contains(CacheKey))
             {
-                try
-                {
-                    conn.Open();
-                    string query = "EXEC GetAllKendaraan";
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dgvKendaraan.DataSource = dt;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Gagal memuat kendaraan: " + ex.Message);
-                }
+                dt = _cache.Get(CacheKey) as DataTable;
             }
+            else
+            {
+                dt = new DataTable();
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        string query = "EXEC GetAllKendaraan";
+                        SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Gagal memuat kendaraan: " + ex.Message);
+                        return;
+                    }
+                }
+                _cache.Add(CacheKey, dt, _policy);
+            }
+
+            dgvKendaraan.DataSource = dt;
         }
 
         private bool ValidasiInput()
@@ -146,6 +165,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Kendaraan berhasil ditambahkan!");
                             LoadKendaraan();
                             KosongkanForm();
@@ -157,7 +177,7 @@ namespace ServisMobilApp
                         }
                     }
                 }
-                catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) // duplicate key
+                catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                 {
                     transaction.Rollback();
                     MessageBox.Show("Plat nomor sudah terdaftar. Gunakan yang lain.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -202,6 +222,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Data kendaraan berhasil diubah!");
                             LoadKendaraan();
                             KosongkanForm();
@@ -252,6 +273,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey);
                             MessageBox.Show("Kendaraan berhasil dihapus.");
                             LoadKendaraan();
                             KosongkanForm();
@@ -270,8 +292,6 @@ namespace ServisMobilApp
                 }
             }
         }
-
-
 
         private void btnImport_Click(object sender, EventArgs e)
         {
@@ -313,6 +333,7 @@ namespace ServisMobilApp
 
                     PreviewForm preview = new PreviewForm(dt, "Kendaraan");
                     preview.ShowDialog();
+                    _cache.Remove(CacheKey);
                     LoadKendaraan();
                 }
             }
@@ -324,13 +345,14 @@ namespace ServisMobilApp
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadKendaraan();
             MessageBox.Show("Data kendaraan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void dgvKendaraan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) 
+            if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvKendaraan.Rows[e.RowIndex];
 
@@ -339,7 +361,6 @@ namespace ServisMobilApp
                 txtMerek.Text = row.Cells["Merek"].Value?.ToString() ?? "";
                 txtModel.Text = row.Cells["Model"].Value?.ToString() ?? "";
 
-                
                 string tahun = row.Cells["Tahun"].Value?.ToString() ?? "";
                 if (cmbTahun.Items.Contains(tahun))
                     cmbTahun.SelectedItem = tahun;
@@ -359,7 +380,6 @@ namespace ServisMobilApp
             cmbPelanggan.SelectedIndex = 0;
         }
 
-
         private void EnsureIndexes()
         {
             using (var conn = new SqlConnection(connectionString))
@@ -371,18 +391,17 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Kendaraan_IDPelanggan')
         CREATE NONCLUSTERED INDEX idx_Kendaraan_IDPelanggan ON dbo.Kendaraan(ID_Pelanggan);
 END";
-
                 using (var cmd = new SqlCommand(indexScript, conn))
                 {
                     cmd.ExecuteNonQuery();
                 }
             }
         }
+
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
             {
-                // Tangkap pesan InfoMessage dari SQL Server (STATISTICS IO dan TIME)
                 conn.InfoMessage += (s, e) =>
                 {
                     string messages = string.Join(Environment.NewLine, e.Errors.Cast<SqlError>().Select(err => err.Message));
@@ -391,7 +410,6 @@ END";
 
                 conn.Open();
 
-                // Bungkus query dengan SET STATISTICS IO dan TIME ON/OFF
                 string wrappedQuery = $@"
 SET STATISTICS IO ON;
 SET STATISTICS TIME ON;
@@ -401,7 +419,6 @@ SET STATISTICS TIME OFF;";
 
                 using (var cmd = new SqlCommand(wrappedQuery, conn))
                 {
-                    // Eksekusi tanpa mengambil hasil data, hanya untuk memicu STATISTICS
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -409,22 +426,12 @@ SET STATISTICS TIME OFF;";
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            // Contoh query yang ingin dianalisis, bisa kamu ganti sesuai kebutuhan
-            string heavyQuery = "SELECT Nama, Telepon, Spesialisasi FROM dbo.Mekanik WHERE Nama LIKE 'A%'";
-
+            string heavyQuery = "SELECT NomorPlat, Merek, Model FROM dbo.Kendaraan WHERE Merek LIKE 'H%'";
             AnalyzeQuery(heavyQuery);
         }
 
         private void cmbPelanggan_SelectedIndexChanged(object sender, EventArgs e) { }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void UC_Kendaraan2_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void label3_Click(object sender, EventArgs e) { }
+        private void UC_Kendaraan2_Load(object sender, EventArgs e) { }
     }
 }

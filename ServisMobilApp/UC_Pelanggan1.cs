@@ -1,25 +1,35 @@
 ﻿using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Runtime.Caching;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+
 
 namespace ServisMobilApp
 {
     public partial class UC_Pelanggan1 : UserControl
     {
-        private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+        private readonly string connectionString =
+            "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+
+        // Konfigurasi MemoryCache
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private readonly CacheItemPolicy _policy = new CacheItemPolicy
+        {
+            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+        };
+        private const string CacheKey = "PelangganData";
 
         public UC_Pelanggan1()
         {
             InitializeComponent();
-            LoadPelanggan();
             LoadEmailDomains();
+            LoadPelanggan();
             EnsureIndexes();
-
-
         }
 
         private void LoadEmailDomains()
@@ -34,22 +44,33 @@ namespace ServisMobilApp
 
         private void LoadPelanggan()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            DataTable dt;
+            if (_cache.Contains(CacheKey))
             {
-                try
-                {
-                    conn.Open();
-                    string query = "EXEC GetAllPelanggan";
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dgvData.DataSource = dt;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Gagal memuat data: " + ex.Message);
-                }
+                dt = _cache.Get(CacheKey) as DataTable;
             }
+            else
+            {
+                dt = new DataTable();
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        string query = "EXEC GetAllPelanggan";
+                        SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Gagal memuat data: " + ex.Message);
+                        return;
+                    }
+                }
+                _cache.Add(CacheKey, dt, _policy);
+            }
+
+            dgvData.DataSource = dt;
         }
 
         private bool ValidasiInput()
@@ -104,6 +125,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey); // Hapus cache
                             MessageBox.Show("Data berhasil ditambahkan.");
                             LoadPelanggan();
                             KosongkanForm();
@@ -161,6 +183,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey); // Hapus cache
                             MessageBox.Show("Data berhasil diperbarui.");
                             LoadPelanggan();
                             KosongkanForm();
@@ -212,6 +235,7 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
+                            _cache.Remove(CacheKey); // Hapus cache
                             MessageBox.Show("Data berhasil dihapus.");
                             LoadPelanggan();
                             KosongkanForm();
@@ -230,7 +254,6 @@ namespace ServisMobilApp
                 }
             }
         }
-
 
         private void dgvData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -266,18 +289,14 @@ namespace ServisMobilApp
             txtEmailPrefix.Clear();
             cmbEmailDomain.SelectedIndex = 0;
         }
+
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            try
-            {
-                LoadPelanggan();
-                MessageBox.Show("Data pelanggan berhasil dimuat ulang.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Gagal memuat ulang data pelanggan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _cache.Remove(CacheKey); // Hapus cache secara manual
+            LoadPelanggan();
+            MessageBox.Show("Data pelanggan berhasil dimuat ulang.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
         private void btnImport_Click(object sender, EventArgs e)
         {
             using (var openFile = new OpenFileDialog())
@@ -298,18 +317,16 @@ namespace ServisMobilApp
             {
                 using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    IWorkbook workbook = new NPOI.XSSF.UserModel.XSSFWorkbook(fs); // Excel .xlsx
-                    ISheet sheet = workbook.GetSheetAt(0); // Sheet pertama
+                    IWorkbook workbook = new XSSFWorkbook(fs);
+                    ISheet sheet = workbook.GetSheetAt(0);
                     DataTable dt = new DataTable();
 
-                    // Ambil header
                     IRow headerRow = sheet.GetRow(0);
                     foreach (var cell in headerRow.Cells)
                     {
                         dt.Columns.Add(cell.ToString());
                     }
 
-                    // Ambil data isi
                     for (int i = 1; i <= sheet.LastRowNum; i++)
                     {
                         IRow row = sheet.GetRow(i);
@@ -323,11 +340,9 @@ namespace ServisMobilApp
                         dt.Rows.Add(newRow);
                     }
 
-                    // Tampilkan PreviewForm khusus untuk tabel Pelanggan
                     PreviewForm previewForm = new PreviewForm(dt, "Pelanggan");
                     previewForm.ShowDialog();
-
-                    // Setelah impor, reload data
+                    _cache.Remove(CacheKey); // Hapus cache setelah impor
                     LoadPelanggan();
                 }
             }
@@ -345,32 +360,26 @@ namespace ServisMobilApp
                 var indexScript = @"
 IF OBJECT_ID('dbo.Pelanggan', 'U') IS NOT NULL
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pelanggan_Telepon')
-        CREATE UNIQUE INDEX idx_Pelanggan_Telepon ON dbo.Pelanggan(Telepon);
-
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pelanggan_Email')
-        CREATE UNIQUE INDEX idx_Pelanggan_Email ON dbo.Pelanggan(Email);
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pelanggan_Nama')
+        CREATE NONCLUSTERED INDEX idx_Pelanggan_Nama ON dbo.Pelanggan(Nama);
 END";
-
                 using (var cmd = new SqlCommand(indexScript, conn))
                 {
                     cmd.ExecuteNonQuery();
                 }
             }
         }
+
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.InfoMessage += (s, e) =>
                 {
-                    // Tampilkan semua pesan INFO dari SQL Server
                     MessageBox.Show(e.Message, "STATISTICS INFO");
                 };
 
                 conn.Open();
-
-                // Bungkus query agar STATISTICS IO dan TIME aktif saat eksekusi
                 var wrapped = $@"
 SET STATISTICS IO ON;
 SET STATISTICS TIME ON;
@@ -387,14 +396,13 @@ SET STATISTICS TIME OFF;";
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            // Contoh query berat dari tabel Pelanggan
             var heavyQuery = "SELECT Nama, Telepon, Email FROM dbo.Pelanggan WHERE Nama LIKE 'A%'";
             AnalyzeQuery(heavyQuery);
         }
 
         private void UC_Pelanggan1_Load(object sender, EventArgs e)
         {
-            // Auto load handled in constructor
+            // Sudah di-handle di constructor
         }
     }
 }
