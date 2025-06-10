@@ -337,15 +337,6 @@ namespace ServisMobilApp
                 BEGIN
                     IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDPelanggan')
                         CREATE NONCLUSTERED INDEX idx_Pemesanan_IDPelanggan ON dbo.PemesananServis(ID_Pelanggan);
-                    
-                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDKendaraan')
-                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDKendaraan ON dbo.PemesananServis(ID_Kendaraan);
-                    
-                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDLayanan')
-                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDLayanan ON dbo.PemesananServis(ID_Layanan);
-                    
-                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDMekanik')
-                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDMekanik ON dbo.PemesananServis(ID_Mekanik);
                 END";
 
                 using (var cmd = new SqlCommand(indexScript, conn))
