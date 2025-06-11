@@ -36,11 +36,11 @@
             // dgvPreview
             // 
             this.dgvPreview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPreview.Location = new System.Drawing.Point(25, 26);
+            this.dgvPreview.Location = new System.Drawing.Point(28, 49);
             this.dgvPreview.Name = "dgvPreview";
             this.dgvPreview.RowHeadersWidth = 62;
             this.dgvPreview.RowTemplate.Height = 28;
-            this.dgvPreview.Size = new System.Drawing.Size(852, 424);
+            this.dgvPreview.Size = new System.Drawing.Size(1645, 424);
             this.dgvPreview.TabIndex = 1;
             this.dgvPreview.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPreview_CellContentClick);
             // 
@@ -58,7 +58,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(923, 539);
+            this.ClientSize = new System.Drawing.Size(1720, 539);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.dgvPreview);
             this.Name = "PreviewForm";

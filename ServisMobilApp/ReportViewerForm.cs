@@ -14,9 +14,13 @@ namespace ServisMobilApp
 {
     public partial class ReportViewerForm : Form
     {
-        public ReportViewerForm()
+        
+        private DataTable previewData;
+
+        public ReportViewerForm(DataTable data)
         {
             InitializeComponent();
+            previewData = data;
         }
 
         private void ReportViewerForm_Load(object sender, EventArgs e)
@@ -32,39 +36,28 @@ namespace ServisMobilApp
             // Query SQL lengkap dengan total harga (Harga layanan + Biaya tambahan)
             string query = @"
         SELECT 
-            ls.ID_Laporan,
-            ls.BiayaTambahan,
-            ls.TanggalSelesai,
+    p.Nama AS NamaPelanggan,
+    p.Telepon AS TeleponPelanggan,
+    k.NomorPlat,
+	k.Merek,
+	k.Model,
+    lsrv.NamaLayanan,
+    m.Nama AS NamaMekanik,
+    lsrv.Harga AS HargaLayanan,
+    ps.TanggalPesan,
+    ls.TanggalSelesai,
+	ls.BiayaTambahan,
+    ps.Status,
+    (lsrv.Harga + ls.BiayaTambahan) AS TotalHarga
 
-            ps.ID_Pemesanan,
-            ps.TanggalPesan,
-            ps.TanggalServis,
-            ps.Status,
+FROM LaporanServis ls
+INNER JOIN PemesananServis ps ON ls.ID_Pemesanan = ps.ID_Pemesanan
+INNER JOIN Pelanggan p ON ps.ID_Pelanggan = p.ID_Pelanggan
+INNER JOIN Kendaraan k ON ps.ID_Kendaraan = k.ID_Kendaraan
+INNER JOIN LayananServis lsrv ON ps.ID_Layanan = lsrv.ID_Layanan
+LEFT JOIN Mekanik m ON ps.ID_Mekanik = m.ID_Mekanik
 
-            p.ID_Pelanggan,
-            p.Nama AS NamaPelanggan,
-            p.Telepon AS TeleponPelanggan,
-
-            k.ID_Kendaraan,
-            k.NomorPlat,
-
-            lsrv.ID_Layanan,
-            lsrv.NamaLayanan,
-            lsrv.Harga AS HargaLayanan,
-
-            m.ID_Mekanik,
-            m.Nama AS NamaMekanik,
-
-            (lsrv.Harga + ls.BiayaTambahan) AS TotalHarga
-
-        FROM LaporanServis ls
-        INNER JOIN PemesananServis ps ON ls.ID_Pemesanan = ps.ID_Pemesanan
-        INNER JOIN Pelanggan p ON ps.ID_Pelanggan = p.ID_Pelanggan
-        INNER JOIN Kendaraan k ON ps.ID_Kendaraan = k.ID_Kendaraan
-        INNER JOIN LayananServis lsrv ON ps.ID_Layanan = lsrv.ID_Layanan
-        LEFT JOIN Mekanik m ON ps.ID_Mekanik = m.ID_Mekanik
-
-        ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan;
+ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan;
     ";
 
             // Buat DataTable untuk menampung data

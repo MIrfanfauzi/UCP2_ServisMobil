@@ -329,9 +329,11 @@ SET STATISTICS TIME OFF;";
             }
         }
 
+
+
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            string query = "SELECT * FROM dbo.LayananServis WHERE Harga > 100000";
+            string query = "SELECT * FROM LayananServis WHERE NamaLayanan LIKE 'Servis%';";
             AnalyzeQuery(query);
         }
 

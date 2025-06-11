@@ -43,8 +43,6 @@
             this.cmbPemesanan = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtTotalBiaya = new System.Windows.Forms.TextBox();
             this.btnImport = new System.Windows.Forms.Button();
             this.btnAnalyze = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
@@ -197,24 +195,6 @@
             this.label4.TabIndex = 63;
             this.label4.Text = "LAPORAN SERVIS";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(137, 471);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(124, 26);
-            this.label5.TabIndex = 64;
-            this.label5.Text = "Total Biaya";
-            // 
-            // txtTotalBiaya
-            // 
-            this.txtTotalBiaya.Location = new System.Drawing.Point(377, 471);
-            this.txtTotalBiaya.Name = "txtTotalBiaya";
-            this.txtTotalBiaya.ReadOnly = true;
-            this.txtTotalBiaya.Size = new System.Drawing.Size(279, 26);
-            this.txtTotalBiaya.TabIndex = 65;
-            // 
             // btnImport
             // 
             this.btnImport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -270,8 +250,6 @@
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnAnalyze);
             this.Controls.Add(this.btnRefresh);
-            this.Controls.Add(this.txtTotalBiaya);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbPemesanan);
@@ -312,8 +290,6 @@
         private System.Windows.Forms.ComboBox cmbPemesanan;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtTotalBiaya;
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.Button btnAnalyze;
         private System.Windows.Forms.Button btnRefresh;

@@ -38,7 +38,6 @@ namespace ServisMobilApp
             btnRefresh.Click += btnRefresh_Click;
 
             LoadMekanik();
-            EnsureIndexes();
         }
 
         private void LoadMekanik()
@@ -326,24 +325,7 @@ namespace ServisMobilApp
             }
         }
 
-        private void EnsureIndexes()
-        {
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var indexScript = @"
-IF OBJECT_ID('dbo.Mekanik', 'U') IS NOT NULL
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Mekanik_Nama')
-        CREATE NONCLUSTERED INDEX idx_Mekanik_Nama ON dbo.Mekanik(Nama);
-END";
-                using (var cmd = new SqlCommand(indexScript, conn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
+        
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))

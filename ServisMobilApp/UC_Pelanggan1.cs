@@ -29,7 +29,6 @@ namespace ServisMobilApp
             InitializeComponent();
             LoadEmailDomains();
             LoadPelanggan();
-            EnsureIndexes();
         }
 
         private void LoadEmailDomains()
@@ -349,24 +348,6 @@ namespace ServisMobilApp
             catch (Exception ex)
             {
                 MessageBox.Show("Gagal membaca file Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void EnsureIndexes()
-        {
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var indexScript = @"
-IF OBJECT_ID('dbo.Pelanggan', 'U') IS NOT NULL
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pelanggan_Nama')
-        CREATE NONCLUSTERED INDEX idx_Pelanggan_Nama ON dbo.Pelanggan(Nama);
-END";
-                using (var cmd = new SqlCommand(indexScript, conn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
             }
         }
 

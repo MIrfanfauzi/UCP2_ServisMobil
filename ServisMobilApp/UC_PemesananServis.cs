@@ -26,12 +26,7 @@ namespace ServisMobilApp
             cmbPelanggan.SelectedIndexChanged += cmbPelanggan_SelectedIndexChanged;
             dgvPemesanan.CellClick += dgvPemesanan_CellClick;
 
-            btnImport.Click += btnImport_Click;
-            btnRefresh.Click += btnRefresh_Click;
-            btnTambah.Click += btnTambah_Click;
-            btnUbah.Click += btnUbah_Click;
 
-            EnsureIndexes();
         }
 
         private void LoadComboBoxData()
@@ -327,25 +322,6 @@ namespace ServisMobilApp
             return true;
         }
 
-        private void EnsureIndexes()
-        {
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var indexScript = @"
-                IF OBJECT_ID('dbo.PemesananServis','U') IS NOT NULL
-                BEGIN
-                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Pemesanan_IDPelanggan')
-                        CREATE NONCLUSTERED INDEX idx_Pemesanan_IDPelanggan ON dbo.PemesananServis(ID_Pelanggan);
-                END";
-
-                using (var cmd = new SqlCommand(indexScript, conn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
@@ -380,4 +356,3 @@ namespace ServisMobilApp
 
     }
 }
-

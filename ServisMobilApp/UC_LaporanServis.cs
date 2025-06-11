@@ -25,7 +25,7 @@ namespace ServisMobilApp
             dgvLaporan.CellClick += dgvLaporan_CellClick;
             btnImport.Click += btnImport_Click;
             btnRefresh.Click += btnRefresh_Click;
-            EnsureIndexes();
+            
         }
 
         private void LoadComboBoxData()
@@ -96,7 +96,6 @@ namespace ServisMobilApp
             cmbPemesanan.SelectedIndex = -1;
             txtDeskripsi.Clear();
             txtBiayaTambahan.Clear();
-            txtTotalBiaya.Clear();
             dtpTanggalSelesai.Value = DateTime.Now;
             cmbPemesanan.Focus();
         }
@@ -147,8 +146,11 @@ namespace ServisMobilApp
 
                 try
                 {
-                    string query = "EXEC InsertLaporanServis @ID_Pemesanan, @Deskripsi, @BiayaTambahan, @TanggalSelesai";
-                    using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
+                    string insertQuery = @"
+                INSERT INTO LaporanServis (ID_Pemesanan, Deskripsi, BiayaTambahan, TanggalSelesai)
+                VALUES (@ID_Pemesanan, @Deskripsi, @BiayaTambahan, @TanggalSelesai)";
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Pemesanan", cmbPemesanan.SelectedValue);
                         cmd.Parameters.AddWithValue("@Deskripsi", txtDeskripsi.Text.Trim());
@@ -178,6 +180,7 @@ namespace ServisMobilApp
                 }
             }
         }
+
 
         private void btnUbah_Click(object sender, EventArgs e)
         {
@@ -287,10 +290,36 @@ namespace ServisMobilApp
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            ReportViewerForm reportForm = new ReportViewerForm();
+            if (dgvLaporan.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Pilih satu baris untuk diekspor!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Ambil baris yang dipilih
+            DataGridViewRow selectedRow = dgvLaporan.SelectedRows[0];
+
+            // Buat DataTable dengan satu baris
+            DataTable dt = new DataTable();
+            foreach (DataGridViewColumn col in dgvLaporan.Columns)
+            {
+                dt.Columns.Add(col.HeaderText);
+            }
+
+            DataRow dr = dt.NewRow();
+            foreach (DataGridViewColumn col in dgvLaporan.Columns)
+            {
+                dr[col.Index] = selectedRow.Cells[col.Index].Value?.ToString() ?? "";
+            }
+            dt.Rows.Add(dr);
+
+            // Kirim DataTable ke ReportViewerForm
+            ReportViewerForm reportForm = new ReportViewerForm(dt);
             reportForm.Show();
             this.Hide();
         }
+
+
 
         private void dgvLaporan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -301,7 +330,7 @@ namespace ServisMobilApp
                 lblID.Text = row.Cells["ID_Laporan"].Value?.ToString() ?? "";
                 txtDeskripsi.Text = row.Cells["Deskripsi"].Value?.ToString() ?? "";
                 txtBiayaTambahan.Text = row.Cells["BiayaTambahan"].Value?.ToString() ?? "";
-                txtTotalBiaya.Text = row.Cells["TotalBiaya"].Value?.ToString() ?? "";
+                
 
                 // Pastikan ID_Pemesanan ada di ComboBox sebelum di-set
                 object idPemesanan = row.Cells["ID_Pemesanan"].Value;
@@ -403,26 +432,7 @@ namespace ServisMobilApp
             }
         }
 
-
-        private void EnsureIndexes()
-        {
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var indexScript = @"
-        IF OBJECT_ID('dbo.LaporanServis', 'U') IS NOT NULL
-        BEGIN
-            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Laporan_IDPemesanan')
-                CREATE NONCLUSTERED INDEX idx_Laporan_IDPemesanan ON dbo.LaporanServis(ID_Pemesanan);
-        END";
-
-                using (var cmd = new SqlCommand(indexScript, conn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-        private void AnalyzeQuery(string sqlQuery)
+    private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
             {
@@ -455,6 +465,41 @@ SET STATISTICS TIME OFF;";
             string query = "SELECT * FROM dbo.LaporanServis WHERE BiayaTambahan < 100000";
 
             AnalyzeQuery(query);
-        } 
+        }
+        private void ExportSelectedRowToExcel()
+        {
+            if (dgvLaporan.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Pilih satu baris untuk diekspor!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var row = dgvLaporan.SelectedRows[0];
+
+            using (SaveFileDialog sfd = new SaveFileDialog { Filter = "Excel File|*.xlsx" })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    using (var fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write))
+                    {
+                        IWorkbook workbook = new XSSFWorkbook();
+                        ISheet sheet = workbook.CreateSheet("LaporanServis");
+
+                        IRow headerRow = sheet.CreateRow(0);
+                        for (int i = 0; i < dgvLaporan.Columns.Count; i++)
+                            headerRow.CreateCell(i).SetCellValue(dgvLaporan.Columns[i].HeaderText);
+
+                        IRow dataRow = sheet.CreateRow(1);
+                        for (int i = 0; i < dgvLaporan.Columns.Count; i++)
+                            dataRow.CreateCell(i).SetCellValue(row.Cells[i].Value?.ToString() ?? "");
+
+                        workbook.Write(fs);
+                    }
+
+                    MessageBox.Show("Data berhasil diekspor!", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
     }
 }

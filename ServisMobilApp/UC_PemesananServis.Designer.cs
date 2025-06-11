@@ -47,7 +47,7 @@ namespace ServisMobilApp
             // lblID
             // 
             this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(150, 20);
+            this.lblID.Location = new System.Drawing.Point(14, 12);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(0, 20);
             this.lblID.TabIndex = 0;

@@ -279,41 +279,31 @@ namespace ServisMobilApp {
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class DataTable1DataTable : global::System.Data.TypedTableBase<DataTable1Row> {
             
-            private global::System.Data.DataColumn columnID_Laporan;
-            
             private global::System.Data.DataColumn columnBiayaTambahan;
             
             private global::System.Data.DataColumn columnTanggalSelesai;
             
-            private global::System.Data.DataColumn columnID_Pemesanan;
-            
             private global::System.Data.DataColumn columnStatus;
-            
-            private global::System.Data.DataColumn columnID_Pelanggan;
             
             private global::System.Data.DataColumn columnNamaPelanggan;
             
             private global::System.Data.DataColumn columnTeleponPelanggan;
             
-            private global::System.Data.DataColumn columnID_Kendaraan;
-            
             private global::System.Data.DataColumn columnNomorPlat;
-            
-            private global::System.Data.DataColumn columnID_Layanan;
             
             private global::System.Data.DataColumn columnNamaLayanan;
             
             private global::System.Data.DataColumn columnHargaLayanan;
             
-            private global::System.Data.DataColumn columnID_Mekanik;
-            
             private global::System.Data.DataColumn columnNamaMekanik;
-            
-            private global::System.Data.DataColumn columnTanggalServis;
             
             private global::System.Data.DataColumn columnTanggalPesan;
             
             private global::System.Data.DataColumn columnTotalHarga;
+            
+            private global::System.Data.DataColumn columnMerek;
+            
+            private global::System.Data.DataColumn columnModel;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -350,14 +340,6 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_LaporanColumn {
-                get {
-                    return this.columnID_Laporan;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn BiayaTambahanColumn {
                 get {
                     return this.columnBiayaTambahan;
@@ -374,25 +356,9 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_PemesananColumn {
-                get {
-                    return this.columnID_Pemesanan;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn StatusColumn {
                 get {
                     return this.columnStatus;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_PelangganColumn {
-                get {
-                    return this.columnID_Pelanggan;
                 }
             }
             
@@ -414,25 +380,9 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_KendaraanColumn {
-                get {
-                    return this.columnID_Kendaraan;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn NomorPlatColumn {
                 get {
                     return this.columnNomorPlat;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_LayananColumn {
-                get {
-                    return this.columnID_Layanan;
                 }
             }
             
@@ -454,25 +404,9 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn ID_MekanikColumn {
-                get {
-                    return this.columnID_Mekanik;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn NamaMekanikColumn {
                 get {
                     return this.columnNamaMekanik;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn TanggalServisColumn {
-                get {
-                    return this.columnTanggalServis;
                 }
             }
             
@@ -489,6 +423,22 @@ namespace ServisMobilApp {
             public global::System.Data.DataColumn TotalHargaColumn {
                 get {
                     return this.columnTotalHarga;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn MerekColumn {
+                get {
+                    return this.columnMerek;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ModelColumn {
+                get {
+                    return this.columnModel;
                 }
             }
             
@@ -529,27 +479,22 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public DataTable1Row AddDataTable1Row(decimal BiayaTambahan, System.DateTime TanggalSelesai, string Status, string NamaPelanggan, string TeleponPelanggan, string NomorPlat, string NamaLayanan, decimal HargaLayanan, string NamaMekanik, System.DateTime TanggalServis, System.DateTime TanggalPesan, decimal TotalHarga) {
+            public DataTable1Row AddDataTable1Row(decimal BiayaTambahan, System.DateTime TanggalSelesai, string Status, string NamaPelanggan, string TeleponPelanggan, string NomorPlat, string NamaLayanan, decimal HargaLayanan, string NamaMekanik, System.DateTime TanggalPesan, decimal TotalHarga, string Merek, string Model) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        null,
                         BiayaTambahan,
                         TanggalSelesai,
-                        null,
                         Status,
-                        null,
                         NamaPelanggan,
                         TeleponPelanggan,
-                        null,
                         NomorPlat,
-                        null,
                         NamaLayanan,
                         HargaLayanan,
-                        null,
                         NamaMekanik,
-                        TanggalServis,
                         TanggalPesan,
-                        TotalHarga};
+                        TotalHarga,
+                        Merek,
+                        Model};
                 rowDataTable1Row.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDataTable1Row);
                 return rowDataTable1Row;
@@ -572,111 +517,70 @@ namespace ServisMobilApp {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             internal void InitVars() {
-                this.columnID_Laporan = base.Columns["ID_Laporan"];
                 this.columnBiayaTambahan = base.Columns["BiayaTambahan"];
                 this.columnTanggalSelesai = base.Columns["TanggalSelesai"];
-                this.columnID_Pemesanan = base.Columns["ID_Pemesanan"];
                 this.columnStatus = base.Columns["Status"];
-                this.columnID_Pelanggan = base.Columns["ID_Pelanggan"];
                 this.columnNamaPelanggan = base.Columns["NamaPelanggan"];
                 this.columnTeleponPelanggan = base.Columns["TeleponPelanggan"];
-                this.columnID_Kendaraan = base.Columns["ID_Kendaraan"];
                 this.columnNomorPlat = base.Columns["NomorPlat"];
-                this.columnID_Layanan = base.Columns["ID_Layanan"];
                 this.columnNamaLayanan = base.Columns["NamaLayanan"];
                 this.columnHargaLayanan = base.Columns["HargaLayanan"];
-                this.columnID_Mekanik = base.Columns["ID_Mekanik"];
                 this.columnNamaMekanik = base.Columns["NamaMekanik"];
-                this.columnTanggalServis = base.Columns["TanggalServis"];
                 this.columnTanggalPesan = base.Columns["TanggalPesan"];
                 this.columnTotalHarga = base.Columns["TotalHarga"];
+                this.columnMerek = base.Columns["Merek"];
+                this.columnModel = base.Columns["Model"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             private void InitClass() {
-                this.columnID_Laporan = new global::System.Data.DataColumn("ID_Laporan", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Laporan);
                 this.columnBiayaTambahan = new global::System.Data.DataColumn("BiayaTambahan", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnBiayaTambahan);
                 this.columnTanggalSelesai = new global::System.Data.DataColumn("TanggalSelesai", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTanggalSelesai);
-                this.columnID_Pemesanan = new global::System.Data.DataColumn("ID_Pemesanan", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Pemesanan);
                 this.columnStatus = new global::System.Data.DataColumn("Status", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnStatus);
-                this.columnID_Pelanggan = new global::System.Data.DataColumn("ID_Pelanggan", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Pelanggan);
                 this.columnNamaPelanggan = new global::System.Data.DataColumn("NamaPelanggan", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnNamaPelanggan);
                 this.columnTeleponPelanggan = new global::System.Data.DataColumn("TeleponPelanggan", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTeleponPelanggan);
-                this.columnID_Kendaraan = new global::System.Data.DataColumn("ID_Kendaraan", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Kendaraan);
                 this.columnNomorPlat = new global::System.Data.DataColumn("NomorPlat", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnNomorPlat);
-                this.columnID_Layanan = new global::System.Data.DataColumn("ID_Layanan", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Layanan);
                 this.columnNamaLayanan = new global::System.Data.DataColumn("NamaLayanan", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnNamaLayanan);
                 this.columnHargaLayanan = new global::System.Data.DataColumn("HargaLayanan", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnHargaLayanan);
-                this.columnID_Mekanik = new global::System.Data.DataColumn("ID_Mekanik", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnID_Mekanik);
                 this.columnNamaMekanik = new global::System.Data.DataColumn("NamaMekanik", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnNamaMekanik);
-                this.columnTanggalServis = new global::System.Data.DataColumn("TanggalServis", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnTanggalServis);
                 this.columnTanggalPesan = new global::System.Data.DataColumn("TanggalPesan", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTanggalPesan);
                 this.columnTotalHarga = new global::System.Data.DataColumn("TotalHarga", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTotalHarga);
-                this.columnID_Laporan.AutoIncrement = true;
-                this.columnID_Laporan.AutoIncrementSeed = -1;
-                this.columnID_Laporan.AutoIncrementStep = -1;
-                this.columnID_Laporan.AllowDBNull = false;
-                this.columnID_Laporan.ReadOnly = true;
+                this.columnMerek = new global::System.Data.DataColumn("Merek", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnMerek);
+                this.columnModel = new global::System.Data.DataColumn("Model", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnModel);
                 this.columnBiayaTambahan.AllowDBNull = false;
                 this.columnTanggalSelesai.AllowDBNull = false;
-                this.columnID_Pemesanan.AutoIncrement = true;
-                this.columnID_Pemesanan.AutoIncrementSeed = -1;
-                this.columnID_Pemesanan.AutoIncrementStep = -1;
-                this.columnID_Pemesanan.AllowDBNull = false;
-                this.columnID_Pemesanan.ReadOnly = true;
                 this.columnStatus.AllowDBNull = false;
                 this.columnStatus.MaxLength = 10;
-                this.columnID_Pelanggan.AutoIncrement = true;
-                this.columnID_Pelanggan.AutoIncrementSeed = -1;
-                this.columnID_Pelanggan.AutoIncrementStep = -1;
-                this.columnID_Pelanggan.AllowDBNull = false;
-                this.columnID_Pelanggan.ReadOnly = true;
                 this.columnNamaPelanggan.AllowDBNull = false;
                 this.columnNamaPelanggan.MaxLength = 100;
                 this.columnTeleponPelanggan.AllowDBNull = false;
                 this.columnTeleponPelanggan.MaxLength = 13;
-                this.columnID_Kendaraan.AutoIncrement = true;
-                this.columnID_Kendaraan.AutoIncrementSeed = -1;
-                this.columnID_Kendaraan.AutoIncrementStep = -1;
-                this.columnID_Kendaraan.AllowDBNull = false;
-                this.columnID_Kendaraan.ReadOnly = true;
                 this.columnNomorPlat.AllowDBNull = false;
                 this.columnNomorPlat.MaxLength = 11;
-                this.columnID_Layanan.AutoIncrement = true;
-                this.columnID_Layanan.AutoIncrementSeed = -1;
-                this.columnID_Layanan.AutoIncrementStep = -1;
-                this.columnID_Layanan.AllowDBNull = false;
-                this.columnID_Layanan.ReadOnly = true;
                 this.columnNamaLayanan.AllowDBNull = false;
                 this.columnNamaLayanan.MaxLength = 100;
                 this.columnHargaLayanan.AllowDBNull = false;
-                this.columnID_Mekanik.AutoIncrement = true;
-                this.columnID_Mekanik.AutoIncrementSeed = -1;
-                this.columnID_Mekanik.AutoIncrementStep = -1;
-                this.columnID_Mekanik.ReadOnly = true;
                 this.columnNamaMekanik.MaxLength = 100;
-                this.columnTanggalServis.AllowDBNull = false;
                 this.columnTanggalPesan.AllowDBNull = false;
                 this.columnTotalHarga.ReadOnly = true;
+                this.columnMerek.AllowDBNull = false;
+                this.columnMerek.MaxLength = 50;
+                this.columnModel.AllowDBNull = false;
+                this.columnModel.MaxLength = 50;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -819,17 +723,6 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Laporan {
-                get {
-                    return ((int)(this[this.tableDataTable1.ID_LaporanColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.ID_LaporanColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public decimal BiayaTambahan {
                 get {
                     return ((decimal)(this[this.tableDataTable1.BiayaTambahanColumn]));
@@ -852,34 +745,12 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Pemesanan {
-                get {
-                    return ((int)(this[this.tableDataTable1.ID_PemesananColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.ID_PemesananColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string Status {
                 get {
                     return ((string)(this[this.tableDataTable1.StatusColumn]));
                 }
                 set {
                     this[this.tableDataTable1.StatusColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Pelanggan {
-                get {
-                    return ((int)(this[this.tableDataTable1.ID_PelangganColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.ID_PelangganColumn] = value;
                 }
             }
             
@@ -907,34 +778,12 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Kendaraan {
-                get {
-                    return ((int)(this[this.tableDataTable1.ID_KendaraanColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.ID_KendaraanColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string NomorPlat {
                 get {
                     return ((string)(this[this.tableDataTable1.NomorPlatColumn]));
                 }
                 set {
                     this[this.tableDataTable1.NomorPlatColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Layanan {
-                get {
-                    return ((int)(this[this.tableDataTable1.ID_LayananColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.ID_LayananColumn] = value;
                 }
             }
             
@@ -962,22 +811,6 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public int ID_Mekanik {
-                get {
-                    try {
-                        return ((int)(this[this.tableDataTable1.ID_MekanikColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ID_Mekanik\' in table \'DataTable1\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableDataTable1.ID_MekanikColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public string NamaMekanik {
                 get {
                     try {
@@ -989,17 +822,6 @@ namespace ServisMobilApp {
                 }
                 set {
                     this[this.tableDataTable1.NamaMekanikColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public System.DateTime TanggalServis {
-                get {
-                    return ((global::System.DateTime)(this[this.tableDataTable1.TanggalServisColumn]));
-                }
-                set {
-                    this[this.tableDataTable1.TanggalServisColumn] = value;
                 }
             }
             
@@ -1032,14 +854,24 @@ namespace ServisMobilApp {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsID_MekanikNull() {
-                return this.IsNull(this.tableDataTable1.ID_MekanikColumn);
+            public string Merek {
+                get {
+                    return ((string)(this[this.tableDataTable1.MerekColumn]));
+                }
+                set {
+                    this[this.tableDataTable1.MerekColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetID_MekanikNull() {
-                this[this.tableDataTable1.ID_MekanikColumn] = global::System.Convert.DBNull;
+            public string Model {
+                get {
+                    return ((string)(this[this.tableDataTable1.ModelColumn]));
+                }
+                set {
+                    this[this.tableDataTable1.ModelColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1226,24 +1058,19 @@ namespace ServisMobilApp.LaporanDataSetTableAdapters {
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "DataTable1";
-            tableMapping.ColumnMappings.Add("ID_Laporan", "ID_Laporan");
             tableMapping.ColumnMappings.Add("BiayaTambahan", "BiayaTambahan");
             tableMapping.ColumnMappings.Add("TanggalSelesai", "TanggalSelesai");
-            tableMapping.ColumnMappings.Add("ID_Pemesanan", "ID_Pemesanan");
             tableMapping.ColumnMappings.Add("Status", "Status");
-            tableMapping.ColumnMappings.Add("ID_Pelanggan", "ID_Pelanggan");
             tableMapping.ColumnMappings.Add("NamaPelanggan", "NamaPelanggan");
             tableMapping.ColumnMappings.Add("TeleponPelanggan", "TeleponPelanggan");
-            tableMapping.ColumnMappings.Add("ID_Kendaraan", "ID_Kendaraan");
             tableMapping.ColumnMappings.Add("NomorPlat", "NomorPlat");
-            tableMapping.ColumnMappings.Add("ID_Layanan", "ID_Layanan");
             tableMapping.ColumnMappings.Add("NamaLayanan", "NamaLayanan");
             tableMapping.ColumnMappings.Add("HargaLayanan", "HargaLayanan");
-            tableMapping.ColumnMappings.Add("ID_Mekanik", "ID_Mekanik");
             tableMapping.ColumnMappings.Add("NamaMekanik", "NamaMekanik");
-            tableMapping.ColumnMappings.Add("TanggalServis", "TanggalServis");
             tableMapping.ColumnMappings.Add("TanggalPesan", "TanggalPesan");
             tableMapping.ColumnMappings.Add("TotalHarga", "TotalHarga");
+            tableMapping.ColumnMappings.Add("Merek", "Merek");
+            tableMapping.ColumnMappings.Add("Model", "Model");
             this._adapter.TableMappings.Add(tableMapping);
         }
         
@@ -1260,16 +1087,14 @@ namespace ServisMobilApp.LaporanDataSetTableAdapters {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = @"SELECT ls.ID_Laporan, ls.BiayaTambahan, ls.TanggalSelesai, ps.ID_Pemesanan, ps.TanggalPesan, ps.TanggalServis, ps.Status, p.ID_Pelanggan, p.Nama AS NamaPelanggan, p.Telepon AS TeleponPelanggan, k.ID_Kendaraan, k.NomorPlat, lsrv.ID_Layanan, lsrv.NamaLayanan, lsrv.Harga AS HargaLayanan, m.ID_Mekanik, m.Nama AS NamaMekanik, 
-         lsrv.Harga + ls.BiayaTambahan AS TotalHarga
+            this._commandCollection[0].CommandText = @"SELECT p.Nama AS NamaPelanggan, p.Telepon AS TeleponPelanggan, k.NomorPlat, k.Merek, k.Model, lsrv.NamaLayanan, m.Nama AS NamaMekanik, lsrv.Harga AS HargaLayanan, ps.TanggalPesan, ls.TanggalSelesai, ls.BiayaTambahan, ps.Status, lsrv.Harga + ls.BiayaTambahan AS TotalHarga
 FROM  LaporanServis AS ls INNER JOIN
          PemesananServis AS ps ON ls.ID_Pemesanan = ps.ID_Pemesanan INNER JOIN
          Pelanggan AS p ON ps.ID_Pelanggan = p.ID_Pelanggan INNER JOIN
          Kendaraan AS k ON ps.ID_Kendaraan = k.ID_Kendaraan INNER JOIN
          LayananServis AS lsrv ON ps.ID_Layanan = lsrv.ID_Layanan LEFT OUTER JOIN
          Mekanik AS m ON ps.ID_Mekanik = m.ID_Mekanik
-ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan; 
-";
+ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         

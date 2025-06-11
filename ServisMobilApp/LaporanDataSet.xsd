@@ -12,40 +12,33 @@
               <DbSource ConnectionRef="ServisMobilConnectionString (Settings)" DbObjectType="Unknown" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
                 <SelectCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="true">
-                    <CommandText>SELECT ls.ID_Laporan, ls.BiayaTambahan, ls.TanggalSelesai, ps.ID_Pemesanan, ps.TanggalPesan, ps.TanggalServis, ps.Status, p.ID_Pelanggan, p.Nama AS NamaPelanggan, p.Telepon AS TeleponPelanggan, k.ID_Kendaraan, k.NomorPlat, lsrv.ID_Layanan, lsrv.NamaLayanan, lsrv.Harga AS HargaLayanan, m.ID_Mekanik, m.Nama AS NamaMekanik, 
-         lsrv.Harga + ls.BiayaTambahan AS TotalHarga
+                    <CommandText>SELECT p.Nama AS NamaPelanggan, p.Telepon AS TeleponPelanggan, k.NomorPlat, k.Merek, k.Model, lsrv.NamaLayanan, m.Nama AS NamaMekanik, lsrv.Harga AS HargaLayanan, ps.TanggalPesan, ls.TanggalSelesai, ls.BiayaTambahan, ps.Status, lsrv.Harga + ls.BiayaTambahan AS TotalHarga
 FROM  LaporanServis AS ls INNER JOIN
          PemesananServis AS ps ON ls.ID_Pemesanan = ps.ID_Pemesanan INNER JOIN
          Pelanggan AS p ON ps.ID_Pelanggan = p.ID_Pelanggan INNER JOIN
          Kendaraan AS k ON ps.ID_Kendaraan = k.ID_Kendaraan INNER JOIN
          LayananServis AS lsrv ON ps.ID_Layanan = lsrv.ID_Layanan LEFT OUTER JOIN
          Mekanik AS m ON ps.ID_Mekanik = m.ID_Mekanik
-ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan; 
-</CommandText>
+ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan</CommandText>
                     <Parameters />
                   </DbCommand>
                 </SelectCommand>
               </DbSource>
             </MainSource>
             <Mappings>
-              <Mapping SourceColumn="ID_Laporan" DataSetColumn="ID_Laporan" />
               <Mapping SourceColumn="BiayaTambahan" DataSetColumn="BiayaTambahan" />
               <Mapping SourceColumn="TanggalSelesai" DataSetColumn="TanggalSelesai" />
-              <Mapping SourceColumn="ID_Pemesanan" DataSetColumn="ID_Pemesanan" />
               <Mapping SourceColumn="Status" DataSetColumn="Status" />
-              <Mapping SourceColumn="ID_Pelanggan" DataSetColumn="ID_Pelanggan" />
               <Mapping SourceColumn="NamaPelanggan" DataSetColumn="NamaPelanggan" />
               <Mapping SourceColumn="TeleponPelanggan" DataSetColumn="TeleponPelanggan" />
-              <Mapping SourceColumn="ID_Kendaraan" DataSetColumn="ID_Kendaraan" />
               <Mapping SourceColumn="NomorPlat" DataSetColumn="NomorPlat" />
-              <Mapping SourceColumn="ID_Layanan" DataSetColumn="ID_Layanan" />
               <Mapping SourceColumn="NamaLayanan" DataSetColumn="NamaLayanan" />
               <Mapping SourceColumn="HargaLayanan" DataSetColumn="HargaLayanan" />
-              <Mapping SourceColumn="ID_Mekanik" DataSetColumn="ID_Mekanik" />
               <Mapping SourceColumn="NamaMekanik" DataSetColumn="NamaMekanik" />
-              <Mapping SourceColumn="TanggalServis" DataSetColumn="TanggalServis" />
               <Mapping SourceColumn="TanggalPesan" DataSetColumn="TanggalPesan" />
               <Mapping SourceColumn="TotalHarga" DataSetColumn="TotalHarga" />
+              <Mapping SourceColumn="Merek" DataSetColumn="Merek" />
+              <Mapping SourceColumn="Model" DataSetColumn="Model" />
             </Mappings>
             <Sources />
           </TableAdapter>
@@ -54,66 +47,73 @@ ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan;
       </DataSource>
     </xs:appinfo>
   </xs:annotation>
-  <xs:element name="LaporanDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="LaporanDataSet" msprop:Generator_DataSetName="LaporanDataSet">
+  <xs:element name="LaporanDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="LaporanDataSet" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="LaporanDataSet">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="DataTable1" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_UserTableName="DataTable1">
+        <xs:element name="DataTable1" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="ID_Laporan" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Laporan" msprop:Generator_ColumnPropNameInTable="ID_LaporanColumn" msprop:Generator_ColumnVarNameInTable="columnID_Laporan" msprop:Generator_UserColumnName="ID_Laporan" type="xs:int" />
-              <xs:element name="BiayaTambahan" msprop:Generator_ColumnPropNameInRow="BiayaTambahan" msprop:Generator_ColumnPropNameInTable="BiayaTambahanColumn" msprop:Generator_ColumnVarNameInTable="columnBiayaTambahan" msprop:Generator_UserColumnName="BiayaTambahan" type="xs:decimal" />
-              <xs:element name="TanggalSelesai" msprop:Generator_ColumnPropNameInRow="TanggalSelesai" msprop:Generator_ColumnPropNameInTable="TanggalSelesaiColumn" msprop:Generator_ColumnVarNameInTable="columnTanggalSelesai" msprop:Generator_UserColumnName="TanggalSelesai" type="xs:dateTime" />
-              <xs:element name="ID_Pemesanan" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Pemesanan" msprop:Generator_ColumnPropNameInTable="ID_PemesananColumn" msprop:Generator_ColumnVarNameInTable="columnID_Pemesanan" msprop:Generator_UserColumnName="ID_Pemesanan" type="xs:int" />
-              <xs:element name="Status" msprop:Generator_ColumnPropNameInRow="Status" msprop:Generator_ColumnPropNameInTable="StatusColumn" msprop:Generator_ColumnVarNameInTable="columnStatus" msprop:Generator_UserColumnName="Status">
+              <xs:element name="BiayaTambahan" msprop:Generator_UserColumnName="BiayaTambahan" msprop:Generator_ColumnPropNameInTable="BiayaTambahanColumn" msprop:Generator_ColumnPropNameInRow="BiayaTambahan" msprop:Generator_ColumnVarNameInTable="columnBiayaTambahan" type="xs:decimal" />
+              <xs:element name="TanggalSelesai" msprop:Generator_UserColumnName="TanggalSelesai" msprop:Generator_ColumnPropNameInTable="TanggalSelesaiColumn" msprop:Generator_ColumnPropNameInRow="TanggalSelesai" msprop:Generator_ColumnVarNameInTable="columnTanggalSelesai" type="xs:dateTime" />
+              <xs:element name="Status" msprop:Generator_UserColumnName="Status" msprop:Generator_ColumnPropNameInTable="StatusColumn" msprop:Generator_ColumnPropNameInRow="Status" msprop:Generator_ColumnVarNameInTable="columnStatus">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="10" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="ID_Pelanggan" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Pelanggan" msprop:Generator_ColumnPropNameInTable="ID_PelangganColumn" msprop:Generator_ColumnVarNameInTable="columnID_Pelanggan" msprop:Generator_UserColumnName="ID_Pelanggan" type="xs:int" />
-              <xs:element name="NamaPelanggan" msprop:Generator_ColumnPropNameInRow="NamaPelanggan" msprop:Generator_ColumnPropNameInTable="NamaPelangganColumn" msprop:Generator_ColumnVarNameInTable="columnNamaPelanggan" msprop:Generator_UserColumnName="NamaPelanggan">
+              <xs:element name="NamaPelanggan" msprop:Generator_UserColumnName="NamaPelanggan" msprop:Generator_ColumnPropNameInTable="NamaPelangganColumn" msprop:Generator_ColumnPropNameInRow="NamaPelanggan" msprop:Generator_ColumnVarNameInTable="columnNamaPelanggan">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="100" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="TeleponPelanggan" msprop:Generator_ColumnPropNameInRow="TeleponPelanggan" msprop:Generator_ColumnPropNameInTable="TeleponPelangganColumn" msprop:Generator_ColumnVarNameInTable="columnTeleponPelanggan" msprop:Generator_UserColumnName="TeleponPelanggan">
+              <xs:element name="TeleponPelanggan" msprop:Generator_UserColumnName="TeleponPelanggan" msprop:Generator_ColumnPropNameInTable="TeleponPelangganColumn" msprop:Generator_ColumnPropNameInRow="TeleponPelanggan" msprop:Generator_ColumnVarNameInTable="columnTeleponPelanggan">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="13" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="ID_Kendaraan" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Kendaraan" msprop:Generator_ColumnPropNameInTable="ID_KendaraanColumn" msprop:Generator_ColumnVarNameInTable="columnID_Kendaraan" msprop:Generator_UserColumnName="ID_Kendaraan" type="xs:int" />
-              <xs:element name="NomorPlat" msprop:Generator_ColumnPropNameInRow="NomorPlat" msprop:Generator_ColumnPropNameInTable="NomorPlatColumn" msprop:Generator_ColumnVarNameInTable="columnNomorPlat" msprop:Generator_UserColumnName="NomorPlat">
+              <xs:element name="NomorPlat" msprop:Generator_UserColumnName="NomorPlat" msprop:Generator_ColumnPropNameInTable="NomorPlatColumn" msprop:Generator_ColumnPropNameInRow="NomorPlat" msprop:Generator_ColumnVarNameInTable="columnNomorPlat">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="11" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="ID_Layanan" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Layanan" msprop:Generator_ColumnPropNameInTable="ID_LayananColumn" msprop:Generator_ColumnVarNameInTable="columnID_Layanan" msprop:Generator_UserColumnName="ID_Layanan" type="xs:int" />
-              <xs:element name="NamaLayanan" msprop:Generator_ColumnPropNameInRow="NamaLayanan" msprop:Generator_ColumnPropNameInTable="NamaLayananColumn" msprop:Generator_ColumnVarNameInTable="columnNamaLayanan" msprop:Generator_UserColumnName="NamaLayanan">
+              <xs:element name="NamaLayanan" msprop:Generator_UserColumnName="NamaLayanan" msprop:Generator_ColumnPropNameInTable="NamaLayananColumn" msprop:Generator_ColumnPropNameInRow="NamaLayanan" msprop:Generator_ColumnVarNameInTable="columnNamaLayanan">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="100" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="HargaLayanan" msprop:Generator_ColumnPropNameInRow="HargaLayanan" msprop:Generator_ColumnPropNameInTable="HargaLayananColumn" msprop:Generator_ColumnVarNameInTable="columnHargaLayanan" msprop:Generator_UserColumnName="HargaLayanan" type="xs:decimal" />
-              <xs:element name="ID_Mekanik" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Mekanik" msprop:Generator_ColumnPropNameInTable="ID_MekanikColumn" msprop:Generator_ColumnVarNameInTable="columnID_Mekanik" msprop:Generator_UserColumnName="ID_Mekanik" type="xs:int" minOccurs="0" />
-              <xs:element name="NamaMekanik" msprop:Generator_ColumnPropNameInRow="NamaMekanik" msprop:Generator_ColumnPropNameInTable="NamaMekanikColumn" msprop:Generator_ColumnVarNameInTable="columnNamaMekanik" msprop:Generator_UserColumnName="NamaMekanik" minOccurs="0">
+              <xs:element name="HargaLayanan" msprop:Generator_UserColumnName="HargaLayanan" msprop:Generator_ColumnPropNameInTable="HargaLayananColumn" msprop:Generator_ColumnPropNameInRow="HargaLayanan" msprop:Generator_ColumnVarNameInTable="columnHargaLayanan" type="xs:decimal" />
+              <xs:element name="NamaMekanik" msprop:Generator_UserColumnName="NamaMekanik" msprop:Generator_ColumnPropNameInTable="NamaMekanikColumn" msprop:Generator_ColumnPropNameInRow="NamaMekanik" msprop:Generator_ColumnVarNameInTable="columnNamaMekanik" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="100" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="TanggalServis" msprop:Generator_ColumnPropNameInRow="TanggalServis" msprop:Generator_ColumnPropNameInTable="TanggalServisColumn" msprop:Generator_ColumnVarNameInTable="columnTanggalServis" msprop:Generator_UserColumnName="TanggalServis" type="xs:dateTime" />
-              <xs:element name="TanggalPesan" msprop:Generator_ColumnPropNameInRow="TanggalPesan" msprop:Generator_ColumnPropNameInTable="TanggalPesanColumn" msprop:Generator_ColumnVarNameInTable="columnTanggalPesan" msprop:Generator_UserColumnName="TanggalPesan" type="xs:dateTime" />
-              <xs:element name="TotalHarga" msdata:ReadOnly="true" msprop:Generator_ColumnPropNameInRow="TotalHarga" msprop:Generator_ColumnPropNameInTable="TotalHargaColumn" msprop:Generator_ColumnVarNameInTable="columnTotalHarga" msprop:Generator_UserColumnName="TotalHarga" type="xs:decimal" minOccurs="0" />
+              <xs:element name="TanggalPesan" msprop:Generator_UserColumnName="TanggalPesan" msprop:Generator_ColumnPropNameInTable="TanggalPesanColumn" msprop:Generator_ColumnPropNameInRow="TanggalPesan" msprop:Generator_ColumnVarNameInTable="columnTanggalPesan" type="xs:dateTime" />
+              <xs:element name="TotalHarga" msdata:ReadOnly="true" msprop:Generator_UserColumnName="TotalHarga" msprop:Generator_ColumnPropNameInTable="TotalHargaColumn" msprop:Generator_ColumnPropNameInRow="TotalHarga" msprop:Generator_ColumnVarNameInTable="columnTotalHarga" type="xs:decimal" minOccurs="0" />
+              <xs:element name="Merek" msprop:Generator_ColumnPropNameInRow="Merek" msprop:Generator_ColumnPropNameInTable="MerekColumn" msprop:Generator_ColumnVarNameInTable="columnMerek" msprop:Generator_UserColumnName="Merek">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Model" msprop:Generator_ColumnPropNameInRow="Model" msprop:Generator_ColumnPropNameInTable="ModelColumn" msprop:Generator_ColumnVarNameInTable="columnModel" msprop:Generator_UserColumnName="Model">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

@@ -32,7 +32,6 @@ namespace ServisMobilApp
             LoadTahun();
             LoadPelanggan();
             LoadKendaraan();
-            EnsureIndexes();
         }
 
         private void LoadTahun()
@@ -379,25 +378,6 @@ namespace ServisMobilApp
             cmbTahun.SelectedIndex = 0;
             cmbPelanggan.SelectedIndex = 0;
         }
-
-        private void EnsureIndexes()
-        {
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var indexScript = @"
-IF OBJECT_ID('dbo.Kendaraan', 'U') IS NOT NULL
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Kendaraan_IDPelanggan')
-        CREATE NONCLUSTERED INDEX idx_Kendaraan_IDPelanggan ON dbo.Kendaraan(ID_Pelanggan);
-END";
-                using (var cmd = new SqlCommand(indexScript, conn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connectionString))
