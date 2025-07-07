@@ -45,7 +45,6 @@ namespace ServisMobilApp
     m.Nama AS NamaMekanik,
     lsrv.Harga AS HargaLayanan,
     ps.TanggalPesan,
-    ls.TanggalSelesai,
 	ls.BiayaTambahan,
     ps.Status,
     (lsrv.Harga + ls.BiayaTambahan) AS TotalHarga

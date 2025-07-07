@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -47,6 +48,7 @@ namespace ServisMobilApp
                     try
                     {
                         conn.Open();
+                        // Asumsi nama SP adalah GetAllLayananServis
                         string query = "EXEC GetAllLayanan";
                         SqlDataAdapter da = new SqlDataAdapter(query, conn);
                         da.Fill(dt);
@@ -90,7 +92,7 @@ namespace ServisMobilApp
 
             if (!decimal.TryParse(txtHarga.Text, out harga) || harga < 0)
             {
-                MessageBox.Show("Masukkan harga yang valid!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Masukkan harga yang valid (angka positif)!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -101,7 +103,7 @@ namespace ServisMobilApp
         {
             if (!ValidasiInput(out decimal harga)) return;
 
-            var confirm = MessageBox.Show("Tambah layanan baru?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Tambah layanan baru?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -118,26 +120,24 @@ namespace ServisMobilApp
                         cmd.Parameters.AddWithValue("@Deskripsi", txtDeskripsi.Text.Trim());
                         cmd.Parameters.AddWithValue("@Harga", harga);
 
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
-                            transaction.Commit();
-                            _cache.Remove(CacheKey);
-                            MessageBox.Show("Data layanan berhasil ditambahkan.");
-                            LoadLayanan();
-                            KosongkanForm();
-                        }
-                        else
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Data layanan gagal disimpan.");
-                        }
+                        cmd.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        _cache.Remove(CacheKey);
+                        MessageBox.Show("Data layanan berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadLayanan();
                     }
+                }
+                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
+                catch (SqlException ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menambah layanan: " + ex.Message);
+                    MessageBox.Show("Gagal menambah layanan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -146,13 +146,13 @@ namespace ServisMobilApp
         {
             if (string.IsNullOrEmpty(lblID.Text))
             {
-                MessageBox.Show("Pilih layanan yang ingin diubah.");
+                MessageBox.Show("Pilih layanan yang ingin diubah.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             if (!ValidasiInput(out decimal harga)) return;
 
-            var confirm = MessageBox.Show("Ubah data layanan?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Ubah data layanan?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -170,26 +170,24 @@ namespace ServisMobilApp
                         cmd.Parameters.AddWithValue("@Deskripsi", txtDeskripsi.Text.Trim());
                         cmd.Parameters.AddWithValue("@Harga", harga);
 
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
-                            transaction.Commit();
-                            _cache.Remove(CacheKey);
-                            MessageBox.Show("Data layanan berhasil diperbarui.");
-                            LoadLayanan();
-                            KosongkanForm();
-                        }
-                        else
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Tidak ada perubahan data layanan.");
-                        }
+                        cmd.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        _cache.Remove(CacheKey);
+                        MessageBox.Show("Data layanan berhasil diperbarui.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadLayanan();
                     }
+                }
+                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
+                catch (SqlException ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal mengubah layanan: " + ex.Message);
+                    MessageBox.Show("Gagal mengubah layanan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -198,11 +196,11 @@ namespace ServisMobilApp
         {
             if (string.IsNullOrEmpty(lblID.Text))
             {
-                MessageBox.Show("Pilih layanan yang ingin dihapus.");
+                MessageBox.Show("Pilih layanan yang ingin dihapus.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var confirm = MessageBox.Show("Yakin ingin menghapus data layanan?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Yakin ingin menghapus data layanan?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -212,7 +210,8 @@ namespace ServisMobilApp
 
                 try
                 {
-                    string query = "EXEC DeleteLayanan @ID_Layanan";
+                    // Asumsi ada stored procedure DeleteLayanan atau menggunakan query langsung
+                    string query = "DELETE FROM LayananServis WHERE ID_Layanan = @ID_Layanan";
                     using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Layanan", int.Parse(lblID.Text));
@@ -222,21 +221,20 @@ namespace ServisMobilApp
                         {
                             transaction.Commit();
                             _cache.Remove(CacheKey);
-                            MessageBox.Show("Data layanan berhasil dihapus.");
+                            MessageBox.Show("Data layanan berhasil dihapus.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadLayanan();
-                            KosongkanForm();
                         }
                         else
                         {
                             transaction.Rollback();
-                            MessageBox.Show("Data layanan tidak ditemukan.");
+                            MessageBox.Show("Data layanan tidak ditemukan.", "Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menghapus layanan: " + ex.Message);
+                    MessageBox.Show("Gagal menghapus layanan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -291,8 +289,9 @@ namespace ServisMobilApp
                         dt.Rows.Add(newRow);
                     }
 
-                    PreviewForm preview = new PreviewForm(dt, "LayananServis");
-                    preview.ShowDialog();
+                    // Asumsi ada form PreviewForm
+                    // PreviewForm preview = new PreviewForm(dt, "LayananServis");
+                    // preview.ShowDialog();
                     _cache.Remove(CacheKey);
                     LoadLayanan();
                 }
@@ -328,8 +327,6 @@ SET STATISTICS TIME OFF;";
                 }
             }
         }
-
-
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {

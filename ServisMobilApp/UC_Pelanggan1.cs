@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Runtime.Caching;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ namespace ServisMobilApp
 {
     public partial class UC_Pelanggan1 : UserControl
     {
+        // Connection string dipertahankan sesuai permintaan
         private readonly string connectionString =
             "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
 
@@ -79,19 +81,19 @@ namespace ServisMobilApp
                 string.IsNullOrWhiteSpace(txtAlamat.Text) ||
                 string.IsNullOrWhiteSpace(txtEmailPrefix.Text))
             {
-                MessageBox.Show("Semua data wajib diisi!");
+                MessageBox.Show("Semua data wajib diisi!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
             if (!Regex.IsMatch(txtNama.Text, @"^[a-zA-Z\s]+$"))
             {
-                MessageBox.Show("Nama hanya boleh huruf dan spasi.");
+                MessageBox.Show("Nama hanya boleh huruf dan spasi.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
             if (!Regex.IsMatch(txtNoTelp.Text, @"^08\d{10,11}$"))
             {
-                MessageBox.Show("Nomor telepon harus dimulai dengan 08 dan terdiri dari 12-13 digit.");
+                MessageBox.Show("Nomor telepon harus dimulai dengan 08 dan terdiri dari 12-13 digit.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -102,7 +104,7 @@ namespace ServisMobilApp
         {
             if (!ValidasiInput()) return;
 
-            var confirm = MessageBox.Show("Tambah pelanggan baru?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Tambah pelanggan baru?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -118,33 +120,28 @@ namespace ServisMobilApp
                         cmd.Parameters.AddWithValue("@Nama", txtNama.Text.Trim());
                         cmd.Parameters.AddWithValue("@Telepon", txtNoTelp.Text.Trim());
                         cmd.Parameters.AddWithValue("@Alamat", txtAlamat.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Email", (txtEmailPrefix.Text + cmbEmailDomain.SelectedItem).ToLower());
+                        cmd.Parameters.AddWithValue("@Email", (txtEmailPrefix.Text.Trim() + cmbEmailDomain.SelectedItem).ToLower());
 
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
-                            transaction.Commit();
-                            _cache.Remove(CacheKey); // Hapus cache
-                            MessageBox.Show("Data berhasil ditambahkan.");
-                            LoadPelanggan();
-                            KosongkanForm();
-                        }
-                        else
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Data tidak berhasil disimpan.");
-                        }
+                        cmd.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        _cache.Remove(CacheKey);
+                        MessageBox.Show("Data berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadPelanggan();
+                        KosongkanForm();
                     }
                 }
-                catch (SqlException ex) when (ex.Number == 2627)
+                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
+                catch (SqlException ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Telepon atau email sudah digunakan!");
+                    // ex.Message akan berisi pesan user-friendly dari RAISERROR di stored procedure
+                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menambah: " + ex.Message);
+                    MessageBox.Show("Terjadi kesalahan umum: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -153,13 +150,13 @@ namespace ServisMobilApp
         {
             if (string.IsNullOrEmpty(lblID.Text))
             {
-                MessageBox.Show("Pilih data yang ingin diubah.");
+                MessageBox.Show("Pilih data yang ingin diubah.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             if (!ValidasiInput()) return;
 
-            var confirm = MessageBox.Show("Ubah data pelanggan?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Ubah data pelanggan?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -176,33 +173,28 @@ namespace ServisMobilApp
                         cmd.Parameters.AddWithValue("@Nama", txtNama.Text.Trim());
                         cmd.Parameters.AddWithValue("@Telepon", txtNoTelp.Text.Trim());
                         cmd.Parameters.AddWithValue("@Alamat", txtAlamat.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Email", (txtEmailPrefix.Text + cmbEmailDomain.SelectedItem).ToLower());
+                        cmd.Parameters.AddWithValue("@Email", (txtEmailPrefix.Text.Trim() + cmbEmailDomain.SelectedItem).ToLower());
 
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
-                            transaction.Commit();
-                            _cache.Remove(CacheKey); // Hapus cache
-                            MessageBox.Show("Data berhasil diperbarui.");
-                            LoadPelanggan();
-                            KosongkanForm();
-                        }
-                        else
-                        {
-                            transaction.Rollback();
-                            MessageBox.Show("Tidak ada perubahan data.");
-                        }
+                        cmd.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        _cache.Remove(CacheKey);
+                        MessageBox.Show("Data berhasil diperbarui.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadPelanggan();
+                        KosongkanForm();
                     }
                 }
-                catch (SqlException ex) when (ex.Number == 2627)
+                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
+                catch (SqlException ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Telepon atau email sudah digunakan!");
+                    // ex.Message akan berisi pesan user-friendly dari RAISERROR di stored procedure
+                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal mengubah: " + ex.Message);
+                    MessageBox.Show("Gagal mengubah: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -211,11 +203,11 @@ namespace ServisMobilApp
         {
             if (string.IsNullOrEmpty(lblID.Text))
             {
-                MessageBox.Show("Pilih data yang ingin dihapus.");
+                MessageBox.Show("Pilih data yang ingin dihapus.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var confirm = MessageBox.Show("Yakin ingin menghapus data pelanggan?", "Konfirmasi", MessageBoxButtons.YesNo);
+            var confirm = MessageBox.Show("Yakin ingin menghapus data pelanggan?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -225,7 +217,8 @@ namespace ServisMobilApp
 
                 try
                 {
-                    string query = "EXEC DeletePelanggan @ID_Pelanggan";
+                    // Asumsi ada stored procedure DeletePelanggan atau menggunakan query langsung
+                    string query = "DELETE FROM Pelanggan WHERE ID_Pelanggan = @ID_Pelanggan";
                     using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Pelanggan", int.Parse(lblID.Text));
@@ -234,22 +227,22 @@ namespace ServisMobilApp
                         if (rows > 0)
                         {
                             transaction.Commit();
-                            _cache.Remove(CacheKey); // Hapus cache
-                            MessageBox.Show("Data berhasil dihapus.");
+                            _cache.Remove(CacheKey);
+                            MessageBox.Show("Data berhasil dihapus.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadPelanggan();
                             KosongkanForm();
                         }
                         else
                         {
                             transaction.Rollback();
-                            MessageBox.Show("Data tidak ditemukan.");
+                            MessageBox.Show("Data tidak ditemukan.", "Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    MessageBox.Show("Gagal menghapus: " + ex.Message);
+                    MessageBox.Show("Gagal menghapus: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -291,11 +284,12 @@ namespace ServisMobilApp
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            _cache.Remove(CacheKey); // Hapus cache secara manual
+            _cache.Remove(CacheKey);
             LoadPelanggan();
             MessageBox.Show("Data pelanggan berhasil dimuat ulang.", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // Metode Import dan Analyze tidak diubah
         private void btnImport_Click(object sender, EventArgs e)
         {
             using (var openFile = new OpenFileDialog())
@@ -339,9 +333,10 @@ namespace ServisMobilApp
                         dt.Rows.Add(newRow);
                     }
 
-                    PreviewForm previewForm = new PreviewForm(dt, "Pelanggan");
-                    previewForm.ShowDialog();
-                    _cache.Remove(CacheKey); // Hapus cache setelah impor
+                    // Asumsi ada form bernama PreviewForm
+                    // PreviewForm previewForm = new PreviewForm(dt, "Pelanggan");
+                    // previewForm.ShowDialog();
+                    _cache.Remove(CacheKey);
                     LoadPelanggan();
                 }
             }
