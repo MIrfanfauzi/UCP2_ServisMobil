@@ -1,20 +1,14 @@
 ﻿using Microsoft.Reporting.WinForms;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ServisMobilApp
 {
     public partial class ReportViewerForm : Form
     {
-        
         private DataTable previewData;
 
         public ReportViewerForm(DataTable data)
@@ -28,64 +22,79 @@ namespace ServisMobilApp
             SetupReportViewer();
             this.reportViewer1.RefreshReport();
         }
+
         private void SetupReportViewer()
         {
-            // Connection string ke database
-            string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True;";
+            // Gunakan koneksi dinamis dari class Koneksi
+            Koneksi koneksi = new Koneksi();
+            string connectionString = koneksi.GetConnectionString();
 
-            // Query SQL lengkap dengan total harga (Harga layanan + Biaya tambahan)
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                MessageBox.Show("Koneksi ke database gagal. Pastikan server SQL berjalan dan konfigurasi connection string sudah benar.",
+                                "Koneksi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Query SQL lengkap dengan total harga
             string query = @"
         SELECT 
-    p.Nama AS NamaPelanggan,
-    p.Telepon AS TeleponPelanggan,
-    k.NomorPlat,
-	k.Merek,
-	k.Model,
-    lsrv.NamaLayanan,
-    m.Nama AS NamaMekanik,
-    lsrv.Harga AS HargaLayanan,
-    ps.TanggalPesan,
-	ls.BiayaTambahan,
-    ps.Status,
-    (lsrv.Harga + ls.BiayaTambahan) AS TotalHarga
-
-FROM LaporanServis ls
-INNER JOIN PemesananServis ps ON ls.ID_Pemesanan = ps.ID_Pemesanan
-INNER JOIN Pelanggan p ON ps.ID_Pelanggan = p.ID_Pelanggan
-INNER JOIN Kendaraan k ON ps.ID_Kendaraan = k.ID_Kendaraan
-INNER JOIN LayananServis lsrv ON ps.ID_Layanan = lsrv.ID_Layanan
-LEFT JOIN Mekanik m ON ps.ID_Mekanik = m.ID_Mekanik
-
-ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan;
-    ";
+            p.Nama AS NamaPelanggan,
+            p.Telepon AS TeleponPelanggan,
+            k.NomorPlat,
+            k.Merek,
+            k.Model,
+            lsrv.NamaLayanan,
+            m.Nama AS NamaMekanik,
+            lsrv.Harga AS HargaLayanan,
+            ps.TanggalPesan,
+            ls.BiayaTambahan,
+            ls.TanggalSelesai,
+            ps.Status,
+            (lsrv.Harga + ls.BiayaTambahan) AS TotalHarga
+        FROM LaporanServis ls
+        INNER JOIN PemesananServis ps ON ls.ID_Pemesanan = ps.ID_Pemesanan
+        INNER JOIN Pelanggan p ON ps.ID_Pelanggan = p.ID_Pelanggan
+        INNER JOIN Kendaraan k ON ps.ID_Kendaraan = k.ID_Kendaraan
+        INNER JOIN LayananServis lsrv ON ps.ID_Layanan = lsrv.ID_Layanan
+        LEFT JOIN Mekanik m ON ps.ID_Mekanik = m.ID_Mekanik
+        ORDER BY ls.TanggalSelesai DESC, ls.ID_Laporan;
+        ";
 
             // Buat DataTable untuk menampung data
             DataTable dt = new DataTable();
 
-            // Isi DataTable dengan data dari database
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                da.Fill(dt);
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                    da.Fill(dt);
+                }
+
+                // Buat ReportDataSource dengan nama dataset sesuai RDLC
+                ReportDataSource rds = new ReportDataSource("DataSet1", dt);
+
+                // Bersihkan data source lama dan tambahkan yang baru
+                reportViewer1.LocalReport.DataSources.Clear();
+                reportViewer1.LocalReport.DataSources.Add(rds);
+
+                // Set the path to the report (.rdlc file)
+                string reportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LaporanReport.rdlc");
+                reportViewer1.LocalReport.ReportPath = reportPath;
+                // Refresh the ReportViewer to show the updated report
+                reportViewer1.RefreshReport();
+
             }
-
-            // Buat ReportDataSource dengan nama dataset sesuai RDLC
-            ReportDataSource rds = new ReportDataSource("DataSet1", dt);
-
-            // Bersihkan data source lama dan tambahkan yang baru
-            reportViewer1.LocalReport.DataSources.Clear();
-            reportViewer1.LocalReport.DataSources.Add(rds);
-
-            // Set path ke file report RDLC
-            reportViewer1.LocalReport.ReportPath = @"F:\UMY\PABD\ServisMobilApp\ServisMobilApp\LaporanReport.rdlc";
-
-            // Refresh report viewer untuk menampilkan data terbaru
-            reportViewer1.RefreshReport();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal memuat laporan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void reportViewer1_Load(object sender, EventArgs e)
         {
-
+            // Kosongkan jika tidak diperlukan
         }
     }
 }

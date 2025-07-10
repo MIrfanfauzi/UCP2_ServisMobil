@@ -11,6 +11,12 @@ namespace ServisMobilApp
             InitializeComponent();
         }
 
+        private void HandleConnectionError()
+        {
+            MessageBox.Show("Koneksi ke database gagal. Pastikan server SQL berjalan dan konfigurasi connection string sudah benar.",
+                            "Koneksi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
@@ -18,12 +24,20 @@ namespace ServisMobilApp
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("Silakan isi username dan password.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Silakan isi username dan password.",
+                                "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Ganti dengan koneksi database kamu
-            string connString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+            // Gunakan class Koneksi untuk mendapatkan connection string dinamis
+            Koneksi koneksi = new Koneksi();
+            string connString = koneksi.GetConnectionString();
+
+            if (string.IsNullOrEmpty(connString))
+            {
+                HandleConnectionError();
+                return;
+            }
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -33,7 +47,7 @@ namespace ServisMobilApp
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@username", username);
-                cmd.Parameters.AddWithValue("@password", password); // Belum hashed
+                cmd.Parameters.AddWithValue("@password", password); // Belum menggunakan hashing
 
                 try
                 {
@@ -42,18 +56,25 @@ namespace ServisMobilApp
 
                     if (result == 1)
                     {
-                        MessageBox.Show("Login berhasil sebagai admin!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Login berhasil sebagai admin!",
+                                        "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.DialogResult = DialogResult.OK;
                         this.Close(); // Tutup form login
                     }
                     else
                     {
-                        MessageBox.Show("Username, password, atau role salah.", "Login Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Username, password, atau role salah.",
+                                        "Login Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                catch (SqlException)
+                {
+                    HandleConnectionError();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Gagal login: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Gagal login: " + ex.Message,
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

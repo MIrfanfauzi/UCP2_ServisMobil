@@ -155,7 +155,6 @@ namespace ServisMobilApp
             this.cmbPelanggan.Name = "cmbPelanggan";
             this.cmbPelanggan.Size = new System.Drawing.Size(248, 28);
             this.cmbPelanggan.TabIndex = 5;
-            this.cmbPelanggan.SelectedIndexChanged += new System.EventHandler(this.cmbPelanggan_SelectedIndexChanged);
             // 
             // lblNoPlat
             // 

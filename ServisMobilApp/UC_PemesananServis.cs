@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
@@ -12,27 +13,64 @@ namespace ServisMobilApp
 {
     public partial class UC_PemesananServis : UserControl
     {
-        private string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True";
+        private readonly string connectionString;
         private readonly MemoryCache _cache = MemoryCache.Default;
         private readonly CacheItemPolicy _policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
         private const string CacheKey = "PemesananData";
+        private bool _isInitialLoad = true;
 
         public UC_PemesananServis()
         {
             InitializeComponent();
             LoadComboBoxData();
-            LoadPemesanan();
-
+            LoadPemesanan(true); // Panggil dengan true untuk pesan awal
+            Koneksi koneksi = new Koneksi();
+            connectionString = koneksi.GetConnectionString();
             cmbPelanggan.SelectedIndexChanged += cmbPelanggan_SelectedIndexChanged;
             dgvPemesanan.CellClick += dgvPemesanan_CellClick;
+            btnRefresh.Click += btnRefresh_Click;
+            btnImport.Click += btnImport_Click;
+            btnAnalyze.Click += btnAnalyze_Click;
+        }
+
+        private void HandleDatabaseError(Exception ex, string operation)
+        {
+            if (ex is SqlException sqlEx)
+            {
+                switch (sqlEx.Number)
+                {
+                    case -1:
+                    case 2:
+                    case 53:
+                    case 4060:
+                    case 18456:
+                        MessageBox.Show("Koneksi ke database gagal. Pastikan server SQL aktif dan dapat diakses.", "Kesalahan Koneksi 🔌", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    default:
+                        MessageBox.Show($"Kesalahan saat {operation}: {sqlEx.Message}", "Kesalahan Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        break;
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Terjadi kesalahan umum saat {operation}: {ex.Message}", "Eror Aplikasi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadComboBoxData()
         {
-            LoadCombo(cmbPelanggan, "SELECT ID_Pelanggan, Nama FROM Pelanggan", "Nama", "ID_Pelanggan");
-            LoadCombo(cmbLayanan, "SELECT ID_Layanan, NamaLayanan FROM LayananServis", "NamaLayanan", "ID_Layanan");
-            LoadCombo(cmbMekanik, "SELECT ID_Mekanik, Nama FROM Mekanik", "Nama", "ID_Mekanik");
+            LoadCombo(cmbPelanggan, "SELECT ID_Pelanggan, CAST(ID_Pelanggan AS VARCHAR) + ' - ' + Nama AS DisplayText FROM Pelanggan", "DisplayText", "ID_Pelanggan");
+            LoadCombo(cmbLayanan, "SELECT ID_Layanan, CAST(ID_Layanan AS VARCHAR) + ' - ' + NamaLayanan AS DisplayText FROM LayananServis", "DisplayText", "ID_Layanan");
+            LoadCombo(cmbMekanik, "SELECT ID_Mekanik, CAST(ID_Mekanik AS VARCHAR) + ' - ' + Nama AS DisplayText FROM Mekanik", "DisplayText", "ID_Mekanik");
+
+            cmbStatus.Items.Clear();
             cmbStatus.Items.AddRange(new[] { "Pending", "Selesai" });
+
+            cmbJam.Items.Clear();
+            for (int hour = 9; hour <= 17; hour++)
+            {
+                cmbJam.Items.Add($"{hour:D2}:00");
+            }
         }
 
         private void LoadCombo(ComboBox combo, string query, string display, string value)
@@ -52,7 +90,7 @@ namespace ServisMobilApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Gagal memuat data untuk {combo.Name}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                HandleDatabaseError(ex, $"memuat data {combo.Name}");
             }
         }
 
@@ -60,8 +98,12 @@ namespace ServisMobilApp
         {
             if (cmbPelanggan.SelectedValue != null && cmbPelanggan.SelectedValue is int)
             {
-                string query = $"SELECT ID_Kendaraan, NomorPlat FROM Kendaraan WHERE ID_Pelanggan = {cmbPelanggan.SelectedValue}";
-                LoadCombo(cmbKendaraan, query, "NomorPlat", "ID_Kendaraan");
+                string query = $@"
+                    SELECT ID_Kendaraan, 
+                           CAST(ID_Kendaraan AS VARCHAR) + ' - ' + NomorPlat AS DisplayText
+                    FROM Kendaraan 
+                    WHERE ID_Pelanggan = {cmbPelanggan.SelectedValue}";
+                LoadCombo(cmbKendaraan, query, "DisplayText", "ID_Kendaraan");
             }
             else
             {
@@ -69,7 +111,7 @@ namespace ServisMobilApp
             }
         }
 
-        private void LoadPemesanan()
+        private void LoadPemesanan(bool showSuccessMessage = false)
         {
             DataTable dt;
 
@@ -79,20 +121,32 @@ namespace ServisMobilApp
             }
             else
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 dt = new DataTable();
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                try
                 {
-                    try
+                    using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         string query = "EXEC GetAllPemesananServis";
                         SqlDataAdapter da = new SqlDataAdapter(query, conn);
                         da.Fill(dt);
-                        _cache.Add(CacheKey, dt, _policy);
                     }
-                    catch (Exception ex)
+                    _cache.Add(CacheKey, dt, _policy);
+
+                    stopwatch.Stop();
+                    if (showSuccessMessage && _isInitialLoad)
                     {
-                        MessageBox.Show("Gagal memuat data pemesanan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Data pemesanan berhasil dimuat dalam {stopwatch.Elapsed.TotalSeconds:F2} detik.",
+                                        "Informasi Pemuatan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        _isInitialLoad = false;
                     }
+                }
+                catch (Exception ex)
+                {
+                    stopwatch.Stop();
+                    HandleDatabaseError(ex, "memuat data pemesanan");
+                    return;
                 }
             }
             dgvPemesanan.DataSource = dt;
@@ -113,6 +167,16 @@ namespace ServisMobilApp
 
                 if (DateTime.TryParse(row.Cells["TanggalServis"].Value?.ToString(), out DateTime tgl))
                     dtpTanggalServis.Value = tgl;
+
+                if (row.Cells["JamServis"].Value != null && row.Cells["JamServis"].Value != DBNull.Value)
+                {
+                    TimeSpan jamServis = (TimeSpan)row.Cells["JamServis"].Value;
+                    cmbJam.SelectedItem = jamServis.ToString(@"hh\:mm");
+                }
+                else
+                {
+                    cmbJam.SelectedIndex = -1;
+                }
             }
         }
 
@@ -125,38 +189,34 @@ namespace ServisMobilApp
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                conn.Open();
-                SqlTransaction transaction = conn.BeginTransaction();
+                SqlTransaction transaction = null;
                 try
                 {
-                    string query = "EXEC InsertPemesananServis @ID_Pelanggan, @ID_Kendaraan, @ID_Layanan, @ID_Mekanik, @TanggalServis";
+                    conn.Open();
+                    transaction = conn.BeginTransaction();
+                    string query = "EXEC InsertPemesananServis @ID_Pelanggan, @ID_Kendaraan, @ID_Layanan, @ID_Mekanik, @TanggalServis, @JamServis";
                     using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Pelanggan", cmbPelanggan.SelectedValue);
                         cmd.Parameters.AddWithValue("@ID_Kendaraan", cmbKendaraan.SelectedValue);
                         cmd.Parameters.AddWithValue("@ID_Layanan", cmbLayanan.SelectedValue);
-                        cmd.Parameters.AddWithValue("@ID_Mekanik", cmbMekanik.SelectedValue ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@TanggalServis", dtpTanggalServis.Value);
+                        cmd.Parameters.AddWithValue("@ID_Mekanik", cmbMekanik.SelectedValue ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TanggalServis", dtpTanggalServis.Value.Date);
+                        cmd.Parameters.AddWithValue("@JamServis", TimeSpan.Parse(cmbJam.SelectedItem.ToString()));
 
                         cmd.ExecuteNonQuery();
-
-                        transaction.Commit();
-                        MessageBox.Show("Data berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        _cache.Remove(CacheKey);
-                        LoadPemesanan();
-                        KosongkanForm();
                     }
-                }
-                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
-                catch (SqlException ex)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    transaction.Commit();
+
+                    MessageBox.Show("Data berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _cache.Remove(CacheKey);
+                    LoadPemesanan();
+                    KosongkanForm();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    MessageBox.Show("Gagal menambah data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    transaction?.Rollback();
+                    HandleDatabaseError(ex, "menambah pemesanan");
                 }
             }
         }
@@ -168,45 +228,39 @@ namespace ServisMobilApp
                 MessageBox.Show("Pilih data yang ingin diubah!", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             if (!ValidasiForm()) return;
-
             var confirm = MessageBox.Show("Ubah data ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                conn.Open();
-                SqlTransaction transaction = conn.BeginTransaction();
+                SqlTransaction transaction = null;
                 try
                 {
-                    string query = "EXEC UpdatePesananServis @ID_Pemesanan, @ID_Mekanik, @TanggalServis, @Status";
+                    conn.Open();
+                    transaction = conn.BeginTransaction();
+                    string query = "EXEC UpdatePesananServis @ID_Pemesanan, @ID_Mekanik, @TanggalServis, @JamServis, @Status";
                     using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Pemesanan", int.Parse(lblID.Text));
-                        cmd.Parameters.AddWithValue("@ID_Mekanik", cmbMekanik.SelectedValue ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@TanggalServis", dtpTanggalServis.Value);
+                        cmd.Parameters.AddWithValue("@ID_Mekanik", cmbMekanik.SelectedValue ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TanggalServis", dtpTanggalServis.Value.Date);
+                        cmd.Parameters.AddWithValue("@JamServis", TimeSpan.Parse(cmbJam.SelectedItem.ToString()));
                         cmd.Parameters.AddWithValue("@Status", cmbStatus.Text);
 
                         cmd.ExecuteNonQuery();
-
-                        transaction.Commit();
-                        MessageBox.Show("Data berhasil diperbarui.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        _cache.Remove(CacheKey);
-                        LoadPemesanan();
-                        KosongkanForm();
                     }
-                }
-                // --- PERUBAHAN: Menangkap semua pesan dari Stored Procedure ---
-                catch (SqlException ex)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show(ex.Message, "Kesalahan Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    transaction.Commit();
+
+                    MessageBox.Show("Data berhasil diperbarui.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _cache.Remove(CacheKey);
+                    LoadPemesanan();
+                    KosongkanForm();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    MessageBox.Show("Gagal mengubah data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    transaction?.Rollback();
+                    HandleDatabaseError(ex, "mengubah pemesanan");
                 }
             }
         }
@@ -218,22 +272,20 @@ namespace ServisMobilApp
                 MessageBox.Show("Pilih data yang ingin dihapus!", "Informasi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             var confirm = MessageBox.Show("Hapus data ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm != DialogResult.Yes) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                conn.Open();
-                SqlTransaction transaction = conn.BeginTransaction();
+                SqlTransaction transaction = null;
                 try
                 {
-                    // Asumsi ada SP DeletePemesananServis atau menggunakan query langsung
+                    conn.Open();
+                    transaction = conn.BeginTransaction();
                     string query = "DELETE FROM PemesananServis WHERE ID_Pemesanan = @ID_Pemesanan";
                     using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("@ID_Pemesanan", int.Parse(lblID.Text));
-
                         int rows = cmd.ExecuteNonQuery();
                         if (rows > 0)
                         {
@@ -252,8 +304,8 @@ namespace ServisMobilApp
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    transaction?.Rollback();
+                    HandleDatabaseError(ex, "menghapus pemesanan");
                 }
             }
         }
@@ -262,12 +314,11 @@ namespace ServisMobilApp
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Excel Files|*.xlsx;*.xlsm";
+                ofd.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                ofd.Title = "Pilih File Excel untuk Diimpor";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     ImportFromExcel(ofd.FileName);
-                    _cache.Remove(CacheKey);
-                    LoadPemesanan();
                 }
             }
         }
@@ -276,43 +327,53 @@ namespace ServisMobilApp
         {
             try
             {
-                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     IWorkbook workbook = new XSSFWorkbook(fs);
                     ISheet sheet = workbook.GetSheetAt(0);
                     DataTable dt = new DataTable();
 
                     IRow header = sheet.GetRow(0);
+                    if (header == null || header.Cells.Count < 6)
+                    {
+                        MessageBox.Show("Format file Excel tidak sesuai. Harus ada 6 kolom: ID_Pelanggan, ID_Kendaraan, ID_Layanan, ID_Mekanik, TanggalServis, JamServis", "Format Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     foreach (var cell in header.Cells)
                         dt.Columns.Add(cell.ToString());
 
                     for (int i = 1; i <= sheet.LastRowNum; i++)
                     {
                         IRow row = sheet.GetRow(i);
-                        if (row == null) continue;
+                        if (row == null || row.Cells.All(d => d.CellType == CellType.Blank)) continue;
 
                         DataRow newRow = dt.NewRow();
                         for (int j = 0; j < header.Cells.Count; j++)
                             newRow[j] = row.GetCell(j)?.ToString() ?? "";
+
                         dt.Rows.Add(newRow);
                     }
 
-                    // Asumsi ada form PreviewForm
-                    // PreviewForm preview = new PreviewForm(dt, "PemesananServis");
-                    // preview.ShowDialog();
+                    PreviewForm preview = new PreviewForm(dt, "PemesananServis");
+                    preview.ShowDialog();
+
+                    // Reload setelah preview selesai
+                    _cache.Remove(CacheKey);
+                    LoadPemesanan();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Gagal mengimpor file Excel: " + ex.Message);
+                HandleDatabaseError(ex, "membaca file Excel");
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             _cache.Remove(CacheKey);
-            LoadPemesanan();
-            MessageBox.Show("Data pemesanan dimuat ulang.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LoadComboBoxData();
+            LoadPemesanan(true);
         }
 
         private void KosongkanForm()
@@ -323,15 +384,16 @@ namespace ServisMobilApp
             cmbLayanan.SelectedIndex = -1;
             cmbMekanik.SelectedIndex = -1;
             cmbStatus.SelectedIndex = -1;
+            cmbJam.SelectedIndex = -1;
             dtpTanggalServis.Value = DateTime.Now;
         }
 
         private bool ValidasiForm()
         {
             if (cmbPelanggan.SelectedValue == null || cmbKendaraan.SelectedValue == null ||
-                cmbLayanan.SelectedValue == null)
+                cmbLayanan.SelectedValue == null || cmbJam.SelectedIndex == -1)
             {
-                MessageBox.Show("Pelanggan, Kendaraan, dan Layanan wajib diisi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Pelanggan, Kendaraan, Layanan, dan Jam Servis wajib diisi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
@@ -345,27 +407,26 @@ namespace ServisMobilApp
 
         private void AnalyzeQuery(string sqlQuery)
         {
-            using (var conn = new SqlConnection(connectionString))
+            try
             {
-                conn.InfoMessage += (s, e) =>
+                using (var conn = new SqlConnection(connectionString))
                 {
-                    string messages = string.Join(Environment.NewLine, e.Errors.Cast<SqlError>().Select(err => err.Message));
-                    MessageBox.Show(messages, "STATISTICS INFO");
-                };
-
-                conn.Open();
-
-                var wrappedQuery = $@"
-                SET STATISTICS IO ON;
-                SET STATISTICS TIME ON;
-                {sqlQuery};
-                SET STATISTICS IO OFF;
-                SET STATISTICS TIME OFF;";
-
-                using (var cmd = new SqlCommand(wrappedQuery, conn))
-                {
-                    cmd.ExecuteNonQuery();
+                    conn.InfoMessage += (s, e) =>
+                    {
+                        string messages = string.Join(Environment.NewLine, e.Errors.Cast<SqlError>().Select(err => err.Message));
+                        MessageBox.Show(messages, "STATISTICS INFO");
+                    };
+                    conn.Open();
+                    var wrappedQuery = $@"SET STATISTICS IO ON; SET STATISTICS TIME ON; {sqlQuery}; SET STATISTICS IO OFF; SET STATISTICS TIME OFF;";
+                    using (var cmd = new SqlCommand(wrappedQuery, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                HandleDatabaseError(ex, "menganalisis query");
             }
         }
 
@@ -373,6 +434,11 @@ namespace ServisMobilApp
         {
             string query = "SELECT * FROM dbo.PemesananServis WHERE Status = 'Pending'";
             AnalyzeQuery(query);
+        }
+
+        private void UC_PemesananServis_Load(object sender, EventArgs e)
+        {
+            // Dibiarkan kosong, load sudah di constructor
         }
     }
 }

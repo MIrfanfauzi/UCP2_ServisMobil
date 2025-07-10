@@ -89,7 +89,6 @@
             this.txtNamaLayanan.Name = "txtNamaLayanan";
             this.txtNamaLayanan.Size = new System.Drawing.Size(282, 26);
             this.txtNamaLayanan.TabIndex = 21;
-            this.txtNamaLayanan.TextChanged += new System.EventHandler(this.txtNamaLayanan_TextChanged);
             // 
             // txtHarga
             // 

@@ -7,30 +7,37 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+namespace ServisMobilApp.Properties
+{
 
-namespace ServisMobilApp.Properties {
-    
-    
+
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-        
-        public static Settings Default {
-            get {
+
+        public static Settings Default
+        {
+            get
+            {
                 return defaultInstance;
             }
         }
-        
+
+        // Menggunakan Koneksi untuk mendapatkan string koneksi
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Persist Securi" +
-            "ty Info=True;User ID=sa;TrustServerCertificate=True")]
-        public string ServisMobilConnectionString {
-            get {
-                return ((string)(this["ServisMobilConnectionString"]));
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ServisMobilConnectionString
+        {
+            get
+            {
+                // Menggunakan Koneksi untuk mendapatkan connection string
+                Koneksi koneksi = new Koneksi();
+                return koneksi.GetConnectionString(); // Mendapatkan string koneksi dari Koneksi.cs
             }
         }
     }

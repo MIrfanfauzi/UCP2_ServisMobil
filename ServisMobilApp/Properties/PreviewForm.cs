@@ -2,12 +2,12 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ServisMobilApp
 {
     public partial class PreviewForm : Form
     {
-        static string connectionString = "Data Source=LAPTOP-N8SLA3LN\\IRFANFAUZI;Initial Catalog=ServisMobil;Integrated Security=True;";
         private string targetTable;
         private DataTable importData;
 
@@ -49,14 +49,25 @@ namespace ServisMobilApp
                 }
             }
 
-            // Bisa ditambahkan validasi lain per tabel jika perlu
             return true;
         }
 
         private void ImportDataToDatabase()
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             try
             {
+                Koneksi koneksi = new Koneksi();
+                string connectionString = koneksi.GetConnectionString();
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    MessageBox.Show("Gagal mendapatkan koneksi ke database. Pastikan server berjalan.", "Koneksi Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 foreach (DataRow row in importData.Rows)
                 {
                     if (!ValidateRow(row))
@@ -102,12 +113,13 @@ namespace ServisMobilApp
                                 break;
 
                             case "PemesananServis":
-                                cmd.CommandText = "EXEC InsertPemesananServis @ID_Pelanggan, @ID_Kendaraan, @ID_Layanan, @ID_Mekanik, @TanggalServis";
+                                cmd.CommandText = "EXEC InsertPemesananServis @ID_Pelanggan, @ID_Kendaraan, @ID_Layanan, @ID_Mekanik, @TanggalServis, @JamServis";
                                 cmd.Parameters.AddWithValue("@ID_Pelanggan", row["ID_Pelanggan"]);
                                 cmd.Parameters.AddWithValue("@ID_Kendaraan", row["ID_Kendaraan"]);
                                 cmd.Parameters.AddWithValue("@ID_Layanan", row["ID_Layanan"]);
                                 cmd.Parameters.AddWithValue("@ID_Mekanik", row["ID_Mekanik"]);
                                 cmd.Parameters.AddWithValue("@TanggalServis", row["TanggalServis"]);
+                                cmd.Parameters.AddWithValue("@JamServis", row["JamServis"]);
                                 break;
 
                             case "LaporanServis":
@@ -127,11 +139,13 @@ namespace ServisMobilApp
                     }
                 }
 
-                MessageBox.Show("Data berhasil diimpor ke tabel " + targetTable + ".", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close(); // Tutup form setelah berhasil impor
+                stopwatch.Stop();
+                MessageBox.Show($"Data berhasil diimpor ke tabel {targetTable} dalam {stopwatch.Elapsed.TotalSeconds:F2} detik.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
             }
             catch (Exception ex)
             {
+                stopwatch.Stop();
                 MessageBox.Show("Terjadi kesalahan saat impor: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -143,7 +157,7 @@ namespace ServisMobilApp
 
         private void dgvPreview_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Kosong (opsional)
+            // Opsional: bisa digunakan untuk klik isi sel
         }
     }
 }

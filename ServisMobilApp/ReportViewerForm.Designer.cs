@@ -35,7 +35,7 @@
             // 
             this.reportViewer1.Location = new System.Drawing.Point(38, 33);
             this.reportViewer1.Name = "reportViewer1";
-            this.reportViewer1.Size = new System.Drawing.Size(1680, 700);
+            this.reportViewer1.Size = new System.Drawing.Size(787, 824);
             this.reportViewer1.TabIndex = 0;
             this.reportViewer1.Load += new System.EventHandler(this.reportViewer1_Load);
             // 
@@ -43,7 +43,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1776, 767);
+            this.ClientSize = new System.Drawing.Size(887, 903);
             this.Controls.Add(this.reportViewer1);
             this.Name = "ReportViewerForm";
             this.Text = "ReportViewerForm";
