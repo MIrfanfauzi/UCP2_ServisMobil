@@ -25,6 +25,9 @@ namespace ServisMobilApp
 
         public UC_Kendaraan2()
         {
+            // IMPLEMENTASI KONEKSI DINAMIS
+            Koneksi koneksi = new Koneksi();
+            connectionString = koneksi.GetConnectionString();
             InitializeComponent();
             dgvKendaraan.CellClick += dgvKendaraan_CellClick;
             btnRefresh.Click += btnRefresh_Click;
@@ -32,9 +35,7 @@ namespace ServisMobilApp
             LoadTahun();
             LoadPelanggan();
 
-            // IMPLEMENTASI KONEKSI DINAMIS
-            Koneksi koneksi = new Koneksi();
-            connectionString = koneksi.GetConnectionString();
+            
 
             LoadKendaraan(true);
         }

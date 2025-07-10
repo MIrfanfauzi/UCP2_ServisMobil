@@ -19,12 +19,12 @@ namespace ServisMobilApp
 
         public UC_LaporanServis()
         {
+            Koneksi koneksi = new Koneksi();
+            connectionString = koneksi.GetConnectionString(); // Mengambil koneksi dari Koneksi.cs
             InitializeComponent();
             LoadComboBoxData();
             // Panggil dengan 'true' agar pesan muncul sekali saat inisialisasi.
-            LoadLaporan(true);
-            Koneksi koneksi = new Koneksi();
-            connectionString = koneksi.GetConnectionString(); // Mengambil koneksi dari Koneksi.cs
+            LoadLaporan(true);          
             dgvLaporan.CellClick += dgvLaporan_CellClick;
             btnImport.Click += btnImport_Click;
             btnRefresh.Click += btnRefresh_Click;

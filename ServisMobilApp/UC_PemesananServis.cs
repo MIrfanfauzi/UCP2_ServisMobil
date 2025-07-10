@@ -21,11 +21,11 @@ namespace ServisMobilApp
 
         public UC_PemesananServis()
         {
+            Koneksi koneksi = new Koneksi();
+            connectionString = koneksi.GetConnectionString();
             InitializeComponent();
             LoadComboBoxData();
             LoadPemesanan(true); // Panggil dengan true untuk pesan awal
-            Koneksi koneksi = new Koneksi();
-            connectionString = koneksi.GetConnectionString();
             cmbPelanggan.SelectedIndexChanged += cmbPelanggan_SelectedIndexChanged;
             dgvPemesanan.CellClick += dgvPemesanan_CellClick;
             btnRefresh.Click += btnRefresh_Click;
